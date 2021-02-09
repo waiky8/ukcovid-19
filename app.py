@@ -36,7 +36,7 @@ fontsize = 20
 
 today = date.today().isoformat()
 upload_date = today
-admin_pass = "398446"
+admin_pass = "******"
 
 # Read covid file & interrogate dates
 df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
