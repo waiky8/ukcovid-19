@@ -38,8 +38,6 @@ tot_cases_col = "darkgrey"
 tot_deaths_col = "dimgrey"
 grid_col = "gainsboro"
 fontsize = 12
-display_new = True
-display_total = False
 
 today = date.today().isoformat()
 upload_date = today
