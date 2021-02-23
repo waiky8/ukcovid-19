@@ -37,13 +37,13 @@ new_deaths_col = "firebrick"
 tot_cases_col = "darkgrey"
 tot_deaths_col = "dimgrey"
 grid_col = "gainsboro"
-fontsize = 16
+fontsize = 12
 display_new = True
 display_total = False
 
 today = date.today().isoformat()
 upload_date = today
-admin_pass = "xxxxxx"
+admin_pass = "398446"
 
 # Read covid file & interrogate dates
 df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
@@ -260,7 +260,7 @@ app.layout = html.Div(
                         },
                         {
                             "id": "Local Authority",
-                            "name": "Local Authority",
+                            "name": "Local Authority (Lower Tier)",
                             "type": "text"
                         },
                         {
@@ -319,86 +319,76 @@ app.layout = html.Div(
                     page_action="native",  # native / none
                     page_current=0,  # current page number
                     page_size=datatable_rows,  # rows per page
-                    fill_width=True,
+                    fixed_rows={"headers": True},
+                    fixed_columns={"headers": True, "data": 2},
+
+                    style_table={"overflowX": "auto", "overflowY": "auto",
+                                 "minWidth": "100%",
+                                 "height": "500px"},
+
+                    style_header={
+                        "bold": True,
+                        "color": "black",
+                        "backgroundColor": "white",
+                        "whiteSpace": "normal",
+                        "height": "24px"
+                    },
 
                     style_cell={
-                        "height": "30px",
-                        "backgroundColor": bgcol,
                         "color": textcol,
+                        "backgroundColor": bgcol,
                         "font-family": "Verdana",
                         "font_size": fontsize,
+                        "minWidth": 64,
+                        "maxWidth": 160,
                         "padding": "0px 10px 0px 10px"
                     },
 
                     style_cell_conditional=[
                         {
                             "if": {
-                                "column_id": "Row"
-                            },
-                            "width": "50px"},
-                        {
-                            "if": {
                                 "column_id": "Local Authority"
                             },
-                            "width": "80px"},
+                            "width": "120px"},
                         {
                             "if": {
                                 "column_id": "New Cases"
                             },
-                            "width": "50px",
                             "color": "white",
                             "backgroundColor": new_cases_col},
                         {
                             "if": {
                                 "column_id": "New Deaths"
                             },
-                            "width": "50px",
                             "color": "white",
                             "backgroundColor": new_deaths_col},
                         {
                             "if": {
                                 "column_id": "Total Cases"
                             },
-                            "width": "50px",
                             "color": "white",
                             "backgroundColor": tot_cases_col},
                         {
                             "if": {
                                 "column_id": "Total Deaths"
                             },
-                            "width": "50px",
                             "color": "white",
                             "backgroundColor": tot_deaths_col
                         },
                     ],
 
-                    fixed_rows={"headers": True},
-                    fixed_columns={
-                        'headers': True,
-                        'data': 2
-                    },
                     style_data={
                         # wrap long cell content into multiple lines
                         "whiteSpace": "normal",
                         "height": "auto"
                     },
-                    style_table={
-                        "overflowX": "auto",
-                        "overflowY": "auto"
-                    },  # "height": "500px",
+
                     css=[
                         {
                             "selector": ".row",
                             "rule": "margin: 0; flex-wrap: nowrap"
                         }
-                    ],  # fix clipping issue
-                    style_header={
-                        "bold": True,
-                        "color": "black",
-                        "backgroundColor": "white",
-                        "whiteSpace": "normal"
-                    },
-                    style_as_list_view=True
+                    ]
                 )
             ], style={"padding": "0px 20px 0px 20px"}
         ),
