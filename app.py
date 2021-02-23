@@ -17,13 +17,18 @@ from datetime import date
 url_ltla = "https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesByPublishDate&metric=newCasesByPublishDate&metric=newDeaths28DaysByPublishDate&metric=cumDeaths28DaysByPublishDate&format=csv"
 url_uk = "https://api.coronavirus.data.gov.uk/v2/data?areaType=overview&metric=cumCasesByPublishDate&metric=newCasesByPublishDate&metric=newDeaths28DaysByPublishDate&metric=cumDeaths28DaysByPublishDate&format=csv"
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
+                meta_tags=[{"name": "viewport",
+                            "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,"
+                            }
+                           ]
+                )
 server = app.server
 app.title = "UK Covid-19"
 
 # App parameters
-topn = 10  # Show highest n values
-chart_h = 500  # height of charts
+topn = 5  # Show highest n values
+chart_h = 360  # height of charts
 datatable_rows = 500
 textcol = "steelblue"  # text colour
 bgcol = "white"  # background colour of charts, table etc.
@@ -32,11 +37,13 @@ new_deaths_col = "firebrick"
 tot_cases_col = "darkgrey"
 tot_deaths_col = "dimgrey"
 grid_col = "gainsboro"
-fontsize = 20
+fontsize = 16
+display_new = True
+display_total = False
 
 today = date.today().isoformat()
 upload_date = today
-admin_pass = "******"
+admin_pass = "398446"
 
 # Read covid file & interrogate dates
 df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
@@ -68,81 +75,75 @@ app.layout = html.Div(
 
         html.Br(),
 
-        dbc.Row(
-            [
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.H3("New Cases", className="card-title"),
-                            html.H2(
-                                id="new_cases",
-                                className="card-value",
-                                style={"font-weight": "bold"}
-                            )
-                        ],
-                        style={"color": "white",
-                               "background": new_cases_col,
-                               "text-align": "center"
-                               }
+        dbc.Col(
+            dbc.Card(
+                [
+                    html.H3("New Cases", className="card-title"),
+                    html.H1(
+                        id="new_cases",
+                        className="card-value",
+                        style={"font-weight": "bold"}
                     )
-                ),
-
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.H3("New Deaths", className="card-title"),
-                            html.H2(
-                                id="new_deaths",
-                                className="card-value",
-                                style={"font-weight": "bold"}
-                            )
-                        ],
-                        style={"color": "white",
-                               "background": new_deaths_col,
-                               "text-align": "center"
-                               }
-                    )
-                ),
-
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.H3("Total Cases", className="card-title"),
-                            html.H2(
-                                id="total_cases",
-                                className="card-value",
-                                style={"font-weight": "bold"}
-                            )
-                        ],
-                        style={"color": "white",
-                               "background": "darkgrey",
-                               "text-align": "center"
-                               }
-                    )
-                ),
-
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.H3("Total Deaths", className="card-title"),
-                            html.H2(
-                                id="total_deaths",
-                                className="card-value",
-                                style={"font-weight": "bold"}
-                            )
-                        ],
-                        style={"color": "white",
-                               "background": "dimgrey",
-                               "text-align": "center"
-                               }
-                    )
-                )
-            ],
-            className="mb-3",
-            style={"padding": "0px 20px 0px 20px"}
+                ],
+                style={"color": "white",
+                       "background": new_cases_col,
+                       "text-align": "center"
+                       }
+            )
         ),
 
-        html.Br(),
+        dbc.Col(
+            dbc.Card(
+                [
+                    html.H3("New Deaths", className="card-title"),
+                    html.H1(
+                        id="new_deaths",
+                        className="card-value",
+                        style={"font-weight": "bold"}
+                    )
+                ],
+                style={"color": "white",
+                       "background": new_deaths_col,
+                       "text-align": "center"
+                       }
+            )
+        ),
+
+        dbc.Col(
+            dbc.Card(
+                [
+                    html.H3("Total Cases", className="card-title"),
+                    html.H1(
+                        id="total_cases",
+                        className="card-value",
+                        style={"font-weight": "bold"}
+                    )
+                ],
+                style={"color": "white",
+                       "background": "darkgrey",
+                       "text-align": "center"
+                       }
+            )
+        ),
+
+        dbc.Col(
+            dbc.Card(
+                [
+                    html.H3("Total Deaths", className="card-title"),
+                    html.H1(
+                        id="total_deaths",
+                        className="card-value",
+                        style={"font-weight": "bold"}
+                    )
+                ],
+                style={"color": "white",
+                       "background": "dimgrey",
+                       "text-align": "center"
+                       }
+            )
+        ),
+
+        html.Br(), html.Br(),
 
         dbc.Row(
             [
@@ -160,6 +161,8 @@ app.layout = html.Div(
                     )
                 ),
 
+                html.Br(), html.Br(),
+
                 dbc.Col(
                     html.Div(dbc.Row(
                         [
@@ -174,279 +177,283 @@ app.layout = html.Div(
                         ]
                     )
                     )
-                ),
-
-                dbc.Col(dcc.Dropdown(
-                    id="locauth_drop",
-                    options=[{"label": i, "value": i} for i in sorted(df["Local Authority"].unique())],
-                    multi=True,
-                    placeholder="Select Local Authority",
-                    style={"font-size": fontsize, "color": "black", "background-color": "white"}
                 )
-                )
-            ],
-            style={"padding": "0px 20px 0px 20px"}
+            ], style={"padding": "0px 20px 0px 20px"}
         ),
+
+        html.Br(), html.Br(),
+
+        dbc.Col(dcc.Dropdown(
+            id="locauth_drop",
+            options=[{"label": i, "value": i} for i in sorted(df["Local Authority"].unique())],
+            multi=True,
+            placeholder="Select Local Authority",
+            style={"font-size": fontsize, "color": "black", "background-color": "white"}
+        )
+        ),
+
+        html.Br(), html.Br(),
+
+        html.Div(dcc.Graph(id="chart1",
+                           figure={},
+                           config={"displayModeBar": False}  # hide plotly controls
+                           ),
+                 style={"padding": "0px 20px 0px 20px"}
+                 ),
+
+        html.Br(), html.Br(),
+
+        html.Div(dcc.Graph(id="chart2",
+                           figure={},
+                           config={"displayModeBar": False}  # hide plotly controls
+                           ),
+                 style={"padding": "0px 20px 0px 20px"}
+                 ),
+
+        html.Br(),
+
+        html.Div(dcc.Graph(id="chart3",
+                           figure={},
+                           config={"displayModeBar": False}  # hide plotly controls
+                           )
+                 ),
+
+        html.Br(), html.Br(),
+
+        html.Div(dcc.Graph(id="chart4",
+                           figure={},
+                           config={"displayModeBar": False}  # hide plotly controls
+                           ),
+                 style={"padding": "0px 20px 0px 20px"}
+                 ),
+
+        html.Br(), html.Br(),
+
+        html.Div(dcc.Graph(id="chart5",
+                           figure={},
+                           config={"displayModeBar": False}  # hide plotly controls
+                           ),
+                 style={"padding": "0px 20px 0px 20px"}
+                 ),
+
+        html.Br(), html.Br(),
+
+        html.Div(dcc.Graph(id="chart6",
+                           figure={},
+                           config={"displayModeBar": False}  # hide plotly controls
+                           ),
+                 style={"padding": "0px 20px 0px 20px"}
+                 ),
+
+        html.Br(), html.Br(),
+
+        html.Div(
+            [
+                dash_table.DataTable(
+                    id="datatable",
+                    # columns=[{"name": i, "id": i} for i in df_tbl],
+                    columns=[
+                        {
+                            "id": "Row",
+                            "name": "Row",
+                            "type": "numeric"
+                        },
+                        {
+                            "id": "Local Authority",
+                            "name": "Local Authority",
+                            "type": "text"
+                        },
+                        {
+                            "id": "New Cases",
+                            "name": "New Cases",
+                            "type": "numeric",
+                            "format": Format
+                                (
+                                precision=0,
+                                group=",",
+                                scheme=Scheme.fixed,
+                                symbol=""
+                            )
+                        },
+                        {
+                            "id": "New Deaths",
+                            "name": "New Deaths",
+                            "type": "numeric",
+                            "format": Format
+                                (
+                                precision=0,
+                                group=",",
+                                scheme=Scheme.fixed,
+                                symbol="",
+                            )
+                        },
+                        {
+                            "id": "Total Cases",
+                            "name": "Total Cases",
+                            "type": "numeric",
+                            "format": Format
+                                (
+                                precision=0,
+                                group=",",
+                                scheme=Scheme.fixed,
+                                symbol=""
+                            )
+                        },
+                        {
+                            "id": "Total Deaths",
+                            "name": "Total Deaths",
+                            "type": "numeric",
+                            "format": Format
+                                (
+                                precision=0,
+                                group=",",
+                                scheme=Scheme.fixed,
+                                symbol=""
+                            )
+                        }
+                    ],
+
+                    sort_action="native",  # native / none
+                    sort_mode="single",  # single / multi
+                    filter_action="none",  # native / none
+                    page_action="native",  # native / none
+                    page_current=0,  # current page number
+                    page_size=datatable_rows,  # rows per page
+                    fill_width=True,
+
+                    style_cell={
+                        "height": "30px",
+                        "backgroundColor": bgcol,
+                        "color": textcol,
+                        "font-family": "Verdana",
+                        "font_size": fontsize,
+                        "padding": "0px 10px 0px 10px"
+                    },
+
+                    style_cell_conditional=[
+                        {
+                            "if": {
+                                "column_id": "Row"
+                            },
+                            "width": "50px"},
+                        {
+                            "if": {
+                                "column_id": "Local Authority"
+                            },
+                            "width": "80px"},
+                        {
+                            "if": {
+                                "column_id": "New Cases"
+                            },
+                            "width": "50px",
+                            "color": "white",
+                            "backgroundColor": new_cases_col},
+                        {
+                            "if": {
+                                "column_id": "New Deaths"
+                            },
+                            "width": "50px",
+                            "color": "white",
+                            "backgroundColor": new_deaths_col},
+                        {
+                            "if": {
+                                "column_id": "Total Cases"
+                            },
+                            "width": "50px",
+                            "color": "white",
+                            "backgroundColor": tot_cases_col},
+                        {
+                            "if": {
+                                "column_id": "Total Deaths"
+                            },
+                            "width": "50px",
+                            "color": "white",
+                            "backgroundColor": tot_deaths_col
+                        },
+                    ],
+
+                    fixed_rows={"headers": True},
+                    fixed_columns={
+                        'headers': True,
+                        'data': 2
+                    },
+                    style_data={
+                        # wrap long cell content into multiple lines
+                        "whiteSpace": "normal",
+                        "height": "auto"
+                    },
+                    style_table={
+                        "overflowX": "auto",
+                        "overflowY": "auto"
+                    },  # "height": "500px",
+                    css=[
+                        {
+                            "selector": ".row",
+                            "rule": "margin: 0; flex-wrap: nowrap"
+                        }
+                    ],  # fix clipping issue
+                    style_header={
+                        "bold": True,
+                        "color": "black",
+                        "backgroundColor": "white",
+                        "whiteSpace": "normal"
+                    },
+                    style_as_list_view=True
+                )
+            ], style={"padding": "0px 20px 0px 20px"}
+        ),
+
+        html.Br(), html.Br(),
+
+        dbc.Row(html.H2("Select date for data upload (password required)"),
+                style={"padding": "0px 0px 0px 50px"}
+                ),
 
         html.Br(),
 
         dbc.Col(
             dcc.Input(id="admin_pw", type="password", placeholder="Admin PIN"),
-            width={"size": 1, "offset": 9}
+            width={"size": 6, "offset": 1}
         ),
 
-        html.Br(),
-        html.Br(),
+        html.Br(), html.Br(),
 
-        dcc.Tabs(
-            [
-                dcc.Tab(
-                    label="DAILY",
-                    id="daily_tab",
-                    children=[
-                        html.Br(),
-
-                        html.Div(dcc.Graph(id="chart1",
-                                           figure={},
-                                           config={"displayModeBar": False}  # hide plotly controls
-                                           ),
-                                 style={"padding": "0px 20px 0px 20px"}
-                                 ),
-
-                        html.Br(),
-                        html.Br(),
-                        html.Br(),
-
-                        html.Div(dcc.Graph(id="chart2",
-                                           figure={},
-                                           config={"displayModeBar": False}  # hide plotly controls
-                                           ),
-                                 style={"padding": "0px 20px 0px 20px"}
-                                 )
-                    ]
-                ),
-
-                dcc.Tab(
-                    label="TIMELINE",
-                    id="timeline_tab",
-                    children=[
-                        html.Br(),
-
-                        html.Div(dcc.Graph(id="chart5",
-                                           figure={},
-                                           config={"displayModeBar": False}  # hide plotly controls
-                                           )
-                                 ),
-
-                        html.Br(),
-                        html.Br(),
-                        html.Br(),
-
-                        html.Div(dcc.Graph(id="chart6",
-                                           figure={},
-                                           config={"displayModeBar": False}  # hide plotly controls
-                                           ),
-                                 style={"padding": "0px 20px 0px 20px"}
-                                 )
-                    ]
-                ),
-
-                dcc.Tab(
-                    label="TOTALS*",
-                    id="totals_tab",
-                    children=[
-                        html.Br(),
-
-                        html.Div(dcc.Graph(id="chart3",
-                                           figure={},
-                                           config={"displayModeBar": False}  # hide plotly controls
-                                           ),
-                                 style={"padding": "0px 20px 0px 20px"}
-                                 ),
-
-                        html.Br(),
-                        html.Br(),
-                        html.Br(),
-
-                        html.Div(dcc.Graph(id="chart4",
-                                           figure={},
-                                           config={"displayModeBar": False}  # hide plotly controls
-                                           ),
-                                 style={"padding": "0px 20px 0px 20px"}
-                                 )
-                    ]
-                ),
-
-                dcc.Tab(
-                    label="DATA",
-                    id="data_tab",
-                    children=[
-                        html.Br(),
-
-                        html.Div(
-                            [
-                                dash_table.DataTable(
-                                    id="datatable",
-                                    # columns=[{"name": i, "id": i} for i in df_tbl],
-                                    columns=[
-                                        {
-                                            "id": "Row",
-                                            "name": "Row",
-                                            "type": "numeric"
-                                        },
-                                        {
-                                            "id": "Local Authority",
-                                            "name": "Local Authority",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "id": "Total Cases",
-                                            "name": "Total Cases",
-                                            "type": "numeric",
-                                            "format": Format
-                                                (
-                                                precision=0,
-                                                group=",",
-                                                scheme=Scheme.fixed,
-                                                symbol=""
-                                            ),
-                                        },
-                                        {
-                                            "id": "Total Deaths",
-                                            "name": "Total Deaths",
-                                            "type": "numeric",
-                                            "format": Format
-                                                (
-                                                precision=0,
-                                                group=",",
-                                                scheme=Scheme.fixed,
-                                                symbol=""
-                                            ),
-                                        },
-                                        {
-                                            "id": "New Cases",
-                                            "name": "New Cases",
-                                            "type": "numeric",
-                                            "format": Format
-                                                (
-                                                precision=0,
-                                                group=",",
-                                                scheme=Scheme.fixed,
-                                                symbol=""
-                                            ),
-                                        },
-                                        {
-                                            "id": "New Deaths",
-                                            "name": "New Deaths",
-                                            "type": "numeric",
-                                            "format": Format
-                                                (
-                                                precision=0,
-                                                group=",",
-                                                scheme=Scheme.fixed,
-                                                symbol=""
-                                            ),
-                                        }
-                                    ],
-                                    sort_action="native",  # native / none
-                                    sort_mode="single",  # single / multi
-                                    filter_action="native",  # native / none
-                                    page_action="native",  # native / none
-                                    page_current=0,  # current page number
-                                    page_size=datatable_rows,  # rows per page
-                                    fill_width=True,
-                                    style_cell={
-                                        # ensure adequate header width when text is shorter than cell's text
-                                        "minWidth": 95, "maxWidth": 95, "width": 95,
-                                        "backgroundColor": bgcol,
-                                        "color": textcol,
-                                        "font-family": "Verdana",
-                                        # "fontWeight": "bold",
-                                        "font_size": fontsize,
-                                        "height": "30px",
-                                        "maxWidth": "500px",
-                                        "padding": "00px 10px 0px 10px"
-                                    },
-                                    style_cell_conditional=[
-                                        {"if": {"column_id": "Row"},
-                                         "width": "5%"},
-                                        {"if": {"column_id": "Local Authority"},
-                                         "width": "30%"},
-                                        {"if": {"column_id": "New Cases"},
-                                         "color": new_cases_col},
-                                        {"if": {"column_id": "New Deaths"},
-                                         "color": new_deaths_col},
-                                        {"if": {"column_id": "Total Cases"},
-                                         "color": tot_cases_col},
-                                        {"if": {"column_id": "Total Deaths"},
-                                         "color": tot_deaths_col}
-                                    ],
-                                    fixed_rows={"headers": True},
-                                    style_data={  # wrap long cell content into multiple lines
-                                        "whiteSpace": "normal",
-                                        "height": "auto"
-                                    },
-                                    style_table={"overflowX": "auto", "overflowY": "auto"},  # "height": "500px",
-                                    css=[{"selector": ".row", "rule": "margin: 0"}],  # fix text clipping issue
-                                    style_header={"color": "white", "backgroundColor": textcol},
-                                    style_as_list_view=True
-                                )
-                            ], style={"padding": "0px 20px 0px 20px"}
-                        )
-                    ]
-                ),
-
-                dcc.Tab(
-                    label="ADMIN",
-                    id="admin_tab",
-                    disabled=True,
-                    children=[
-                        html.Br(),
-
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    html.Div(
-                                        dcc.DatePickerSingle(
-                                            id="date_picker2",
-                                            date=today,
-                                            display_format="MMM D, YYYY",
-                                            day_size=50,
-                                            initial_visible_month=today,
-                                            min_date_allowed=date_min,
-                                            max_date_allowed=today
-                                        )
-                                    ),
-                                    width={"size": 2, "offset": 1}
-                                )
-                            ]
-                        ),
-
-                        html.Br(),
-
-                        dbc.Col(
-                            html.Div(id="message", children="", style={"padding": "0px 20px 0px 20px"})
-                        )
-
-                    ]
+        dbc.Col(
+            html.Div(
+                dcc.DatePickerSingle(
+                    id="date_picker2",
+                    date=today,
+                    display_format="MMM D, YYYY",
+                    day_size=50,
+                    initial_visible_month=date_max,
+                    min_date_allowed=date_min,
+                    max_date_allowed=today
                 )
-            ]
+            ),
+            width={"size": 2, "offset": 1}
         ),
 
-        html.Br(),
-        html.Br(),
-        html.Br(),
+        html.Br(), html.Br(),
 
-        dbc.Row(html.Label(["* May take several seconds for initial load"]),
-                style={"font-style": "italic", "padding": "0px 0px 0px 50px"}
-                ),
+        dbc.Col(
+            html.Div(id="message", children="", style={"padding": "0px 20px 0px 20px"})
+        ),
+
+        html.Br(), html.Br(), html.Br(),
 
         dbc.Row(html.Label(["Data Source: ",
-                            html.A("GovUK", href="https://coronavirus.data.gov.uk/details/download", target="_blank")]),
+                            html.A("GovUK", href="https://coronavirus.data.gov.uk/details/download",
+                                   target="_blank")]),
                 style={"padding": "0px 0px 0px 50px"}
                 ),
 
-        html.Div(id="dummy", children=[], style={"display": "none"})  # dummy DIV to trigger totals_timeline callback
+        dbc.Row(html.Label(["Code: ",
+                            html.A("Github", href="https://github.com/waiky8/ukcovid-19", target="_blank")]),
+                style={"padding": "0px 0px 0px 50px"}
+                ),
+
+        html.Div(id="dummy", children=[], style={"display": "none"})
+        # dummy DIV to trigger totals_timeline callback
     ]
 )
 
@@ -455,19 +462,22 @@ app.layout = html.Div(
 @app.callback(
     Output("datatable", "data"),
     [
-
         Input("date_picker", "date"),
         Input("locauth_drop", "value"),
         Input("toggle_switch", "value")
     ]
 )
 def update_datatable(selected_date, selected_auth, selected_data):
-    global df
+    global df, hide_new, hide_total
 
     if selected_data == False:
         cases = "New Cases"
+        hide_new = True
+        hide_total = False
     else:
         cases = "Total Cases"
+        hide_new = False
+        hide_total = True
 
     df1 = df[df["date"].isin([selected_date])]
 
@@ -526,7 +536,7 @@ def update_graph(selected_date, selected_auth, selected_data):
 
     d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
 
-    fig1.update_layout(title="<b>" + cases + " as of " + d.strftime("%b %d, %Y") + "</b>",
+    fig1.update_layout(title="<b>" + cases + ": " + d.strftime("%b %d, %Y") + "</b>",
                        title_font_color=textcol,
                        font_color=textcol,
                        font_size=fontsize,
@@ -574,7 +584,7 @@ def update_graph(selected_date, selected_auth, selected_data):
                             )
                      )
 
-    fig2.update_layout(title="<b>" + deaths + " as of " + d.strftime("%b %d, %Y") + "</b>",
+    fig2.update_layout(title="<b>" + deaths + ": " + d.strftime("%b %d, %Y") + "</b>",
                        title_font_color=textcol,
                        font_color=textcol,
                        font_size=fontsize,
@@ -620,13 +630,139 @@ def update_graph(selected_date, selected_auth, selected_data):
         Output("chart3", "figure"),
         Output("chart4", "figure")
     ],
+    [
+        Input("date_picker", "date"),
+        Input("locauth_drop", "value")
+    ]
+)
+def update_graph2(selected_date, selected_auth):
+    global df
+
+    if (selected_auth is None or selected_auth == []):
+        dfa = df[df["date"].isin([selected_date])]
+        dfa = dfa.sort_values(by="New Cases", ascending=False)[:topn]
+        locauth_list = dfa["Local Authority"].unique()
+        df1 = df[df["Local Authority"].isin(locauth_list)]
+    else:
+        df1 = df[df["Local Authority"].isin(selected_auth)]
+        locauth_list = df1["Local Authority"].unique()
+
+    fig3 = go.Figure()
+    fig3.update_layout(
+        title="<b>Cases by Local Authority</b>",
+        title_font_color=textcol,
+        font_color=textcol,
+        font_size=fontsize,
+        plot_bgcolor=bgcol,
+        paper_bgcolor=bgcol,
+        height=chart_h,
+        margin=dict(l=0, r=0, t=50, b=0),
+        xaxis={"categoryorder": "total descending",
+               "title": "",
+               "tickangle": 0,
+               "showgrid": True,
+               "zeroline": False,
+               "gridcolor": grid_col,
+               "zerolinecolor": grid_col,
+               "fixedrange": True},  # disable zoom & pan
+        yaxis={"title": "",
+               "autorange": True,
+               "visible": True,
+               "showgrid": True,
+               "zeroline": False,
+               "gridcolor": grid_col,
+               "zerolinecolor": grid_col,
+               "fixedrange": True},  # disable zoom & pan
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01
+        ),
+        hoverlabel=dict(
+            # bgcolor="white",
+            font_size=fontsize,
+            font_family="Rockwell"
+        )
+    )
+
+    for la in locauth_list:
+        dfx = df1[df1["Local Authority"] == la]
+        fig3.add_trace(go.Scatter(x=dfx["date"],
+                                  y=dfx["New Cases"],
+                                  mode="lines",
+                                  name=la,
+                                  showlegend=True,
+                                  hovertemplate="%{y:,}<br>%{x}<extra></extra>"
+                                  )
+                       )
+
+    fig4 = go.Figure()
+    fig4.update_layout(
+        title="<b>Deaths by Local Authority</b>",
+        title_font_color=textcol,
+        font_color=textcol,
+        font_size=fontsize,
+        plot_bgcolor=bgcol,
+        paper_bgcolor=bgcol,
+        height=chart_h,
+        margin=dict(l=0, r=0, t=50, b=0),
+        xaxis={"categoryorder": "total descending",
+               "title": "",
+               "tickangle": 0,
+               "showgrid": True,
+               "zeroline": False,
+               "gridcolor": grid_col,
+               "zerolinecolor": grid_col,
+               "fixedrange": True},  # disable zoom & pan
+        yaxis={"title": "",
+               "autorange": True,
+               "visible": True,
+               "showgrid": True,
+               "zeroline": False,
+               "gridcolor": grid_col,
+               "zerolinecolor": grid_col,
+               "fixedrange": True},  # disable zoom & pan
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01
+        ),
+        hoverlabel=dict(
+            # bgcolor="white",
+            font_size=fontsize,
+            font_family="Rockwell"
+        )
+    )
+
+    for la in locauth_list:
+        dfx = df1[df1["Local Authority"] == la]
+        fig4.add_trace(go.Scatter(x=dfx["date"],
+                                  y=dfx["New Deaths"],
+                                  mode="lines",
+                                  name=la,
+                                  showlegend=True,
+                                  hovertemplate="%{y:,}<br>%{x}<extra></extra>"
+                                  )
+                       )
+
+    return fig3, fig4
+
+
+# Timeline Charts Set 2 ----------
+@app.callback(
+    [
+        Output("chart5", "figure"),
+        Output("chart6", "figure")
+    ],
     Input("dummy", "children")
 )
 def totals_timeline(none):
     date_list = df["date"].unique()
 
-    fig3 = go.Figure()
-    fig3.update_layout(
+    fig5 = go.Figure()
+    fig5.update_layout(
         title="<b>Daily Cases Over Time</b>",
         title_font_color=textcol,
         font_color=textcol,
@@ -665,7 +801,7 @@ def totals_timeline(none):
         tc = dfx["New Cases"].sum()
         tot_cases.append(tc)
 
-    fig3.add_trace(go.Scatter(x=date_list,
+    fig5.add_trace(go.Scatter(x=date_list,
                               y=tot_cases,
                               fill="tonexty",
                               mode="none",
@@ -675,8 +811,8 @@ def totals_timeline(none):
                               )
                    )
 
-    fig4 = go.Figure()
-    fig4.update_layout(
+    fig6 = go.Figure()
+    fig6.update_layout(
         title="<b>Daily Deaths Over Time</b>",
         title_font_color=textcol,
         font_size=fontsize,
@@ -715,7 +851,7 @@ def totals_timeline(none):
         td = dfx["New Deaths"].sum()
         tot_deaths.append(td)
 
-    fig4.add_trace(go.Scatter(x=date_list,
+    fig6.add_trace(go.Scatter(x=date_list,
                               y=tot_deaths,
                               fill="tonexty",
                               mode="none",
@@ -724,132 +860,6 @@ def totals_timeline(none):
                               hovertemplate="%{y:,}<br>%{x}<extra></extra>"
                               )
                    )
-
-    return fig3, fig4
-
-
-# Timeline Charts Set 2 ----------
-@app.callback(
-    [
-        Output("chart5", "figure"),
-        Output("chart6", "figure")
-    ],
-    [
-        Input("date_picker", "date"),
-        Input("locauth_drop", "value")
-    ]
-)
-def update_graph2(selected_date, selected_auth):
-    global df
-
-    df1 = df[df["date"].isin([selected_date])]
-
-    if (selected_auth is None or selected_auth == []):
-        locauth_list = []
-        df1 = []
-    else:
-        df1 = df[df["Local Authority"].isin(selected_auth)]
-        locauth_list = df1["Local Authority"].unique()
-
-    fig5 = go.Figure()
-    fig5.update_layout(
-        title="<b>Cases By Selected Local Authorities</b>",
-        title_font_color=textcol,
-        font_color=textcol,
-        font_size=fontsize,
-        plot_bgcolor=bgcol,
-        paper_bgcolor=bgcol,
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        xaxis={"categoryorder": "total descending",
-               "title": "",
-               "tickangle": 0,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        yaxis={"title": "",
-               "autorange": True,
-               "visible": True,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01
-        ),
-        hoverlabel=dict(
-            # bgcolor="white",
-            font_size=fontsize,
-            font_family="Rockwell"
-        )
-    )
-
-    for la in locauth_list:
-        dfx = df1[df1["Local Authority"] == la]
-        fig5.add_trace(go.Scatter(x=dfx["date"],
-                                  y=dfx["New Cases"],
-                                  mode="lines",
-                                  name=la,
-                                  showlegend=True,
-                                  hovertemplate="%{y:,}<br>%{x}<extra></extra>"
-                                  )
-                       )
-
-    fig6 = go.Figure()
-    fig6.update_layout(
-        title="<b>Deaths By Selected Local Authorities</b>",
-        title_font_color=textcol,
-        font_color=textcol,
-        font_size=fontsize,
-        plot_bgcolor=bgcol,
-        paper_bgcolor=bgcol,
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        xaxis={"categoryorder": "total descending",
-               "title": "",
-               "tickangle": 0,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        yaxis={"title": "",
-               "autorange": True,
-               "visible": True,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01
-        ),
-        hoverlabel=dict(
-            # bgcolor="white",
-            font_size=fontsize,
-            font_family="Rockwell"
-        )
-    )
-
-    for la in locauth_list:
-        dfx = df1[df1["Local Authority"] == la]
-        fig6.add_trace(go.Scatter(x=dfx["date"],
-                                  y=dfx["New Deaths"],
-                                  mode="lines",
-                                  name=la,
-                                  showlegend=True,
-                                  hovertemplate="%{y:,}<br>%{x}<extra></extra>"
-                                  )
-                       )
 
     return fig5, fig6
 
@@ -885,29 +895,25 @@ def update_summary(selected_date):
     return new_cases, new_deaths, total_cases, total_deaths
 
 
-# Admin Password ----------
-@app.callback(
-    Output("admin_tab", "disabled"),
-    Input("admin_pw", "value"),
-    State("admin_tab", "disabled")
-)
-def save_date(password, tab_disabled):
-    if password == admin_pass:
-        return False  # not tab_disabled
-    else:
-        return True  # tab_disabled
-
-
 # Admin (Upload New Data) ----------
 @app.callback(
     Output("message", "children"),
-    Input("date_picker2", "date"),
+    [
+        Input("date_picker2", "date"),
+        Input("admin_pw", "value")
+    ],
     prevent_initial_call=True
 )
-def submit_upload(selected_date):
+def submit_upload(selected_date, password):
     global date_list
 
     message = ""
+    if password == admin_pass:
+        pass
+    else:
+        message = " Please enter valid pin"
+        return message
+
     d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
 
     # Check if data already uploaded
