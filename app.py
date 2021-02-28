@@ -5,7 +5,6 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import dash_table
 from dash_table.Format import Format, Scheme, Sign, Symbol
-import dash_daq as daq
 import plotly.graph_objects as go
 import pandas as pd
 from openpyxl import load_workbook
@@ -41,7 +40,7 @@ fontsize = 12
 
 today = date.today().isoformat()
 upload_date = today
-admin_pass = "xxxxxx"
+admin_pass = "398446"
 
 # Read covid file & interrogate dates
 df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
@@ -162,19 +161,20 @@ app.layout = html.Div(
                 html.Br(), html.Br(),
 
                 dbc.Col(
-                    html.Div(dbc.Row(
-                        [
-                            daq.ToggleSwitch(
-                                id="toggle_switch",
-                                label="New / Cumulative Data",
-                                labelPosition="bottom",
-                                color=new_cases_col,
-                                size=80,
-                                value=False
+                    [
+                        html.Div(
+                            dcc.RadioItems(
+                                id="data_type",
+                                options=[
+                                    {"label": "Daily Data", "value": "daily"},
+                                    {"label": "Cumulative Data", "value": "cumulative"}
+                                ],
+                                value="daily",
+                                labelStyle={"display": "block", "cursor": "pointer", "margin-left": "20px"},
+                                inputStyle={"margin-right": "10px"}
                             )
-                        ]
-                    )
-                    )
+                        )
+                    ]
                 )
             ], style={"padding": "0px 20px 0px 20px"}
         ),
@@ -327,9 +327,9 @@ app.layout = html.Div(
                     style_header={
                         "bold": True,
                         "color": "black",
-                        "backgroundColor": "white",
+                        "backgroundColor": "lightgrey",
                         "whiteSpace": "normal",
-                        "height": "24px"
+                        "height": "56px"
                     },
 
                     style_cell={
@@ -452,20 +452,16 @@ app.layout = html.Div(
     [
         Input("date_picker", "date"),
         Input("locauth_drop", "value"),
-        Input("toggle_switch", "value")
+        Input("data_type", "value")
     ]
 )
 def update_datatable(selected_date, selected_auth, selected_data):
-    global df, hide_new, hide_total
+    global df
 
-    if selected_data == False:
+    if selected_data == "daily":
         cases = "New Cases"
-        hide_new = True
-        hide_total = False
     else:
         cases = "Total Cases"
-        hide_new = False
-        hide_total = True
 
     df1 = df[df["date"].isin([selected_date])]
 
@@ -490,13 +486,13 @@ def update_datatable(selected_date, selected_auth, selected_data):
     [
         Input("date_picker", "date"),
         Input("locauth_drop", "value"),
-        Input("toggle_switch", "value")
+        Input("data_type", "value")
     ]
 )
 def update_graph(selected_date, selected_auth, selected_data):
     global df
 
-    if selected_data == False:
+    if selected_data == "daily":
         cases = "New Cases"
         deaths = "New Deaths"
     else:
