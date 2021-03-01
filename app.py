@@ -40,7 +40,7 @@ fontsize = 15
 
 today = date.today().isoformat()
 upload_date = today
-admin_pass = "xxxxxx"
+admin_pass = "398446"
 
 # Read covid file & interrogate dates
 df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
@@ -367,7 +367,7 @@ app.layout = html.Div(
                                 "color": "black",
                                 "backgroundColor": "lightgrey",
                                 "whiteSpace": "normal",
-                                "height": "56px"
+                                "height": "72px"
                             },
 
                             style_cell={
