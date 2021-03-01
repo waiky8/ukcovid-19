@@ -36,11 +36,11 @@ new_deaths_col = "firebrick"
 tot_cases_col = "darkgrey"
 tot_deaths_col = "dimgrey"
 grid_col = "gainsboro"
-fontsize = 12
+fontsize = 15
 
 today = date.today().isoformat()
 upload_date = today
-admin_pass = "xxxxxx"
+admin_pass = "398446"
 
 # Read covid file & interrogate dates
 df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
@@ -192,200 +192,240 @@ app.layout = html.Div(
 
         html.Br(), html.Br(),
 
-        html.Div(dcc.Graph(id="chart1",
-                           figure={},
-                           config={"displayModeBar": False}  # hide plotly controls
-                           ),
-                 style={"padding": "0px 20px 0px 20px"}
-                 ),
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart1",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              )
+                ]
+            ),
+            style={"padding": "0px 20px 0px 20px"}
+        ),
 
         html.Br(), html.Br(),
 
-        html.Div(dcc.Graph(id="chart2",
-                           figure={},
-                           config={"displayModeBar": False}  # hide plotly controls
-                           ),
-                 style={"padding": "0px 20px 0px 20px"}
-                 ),
-
-        html.Br(),
-
-        html.Div(dcc.Graph(id="chart3",
-                           figure={},
-                           config={"displayModeBar": False}  # hide plotly controls
-                           )
-                 ),
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart2",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              ),
+                ]
+            ), style={"padding": "0px 20px 0px 20px"}
+        ),
 
         html.Br(), html.Br(),
 
-        html.Div(dcc.Graph(id="chart4",
-                           figure={},
-                           config={"displayModeBar": False}  # hide plotly controls
-                           ),
-                 style={"padding": "0px 20px 0px 20px"}
-                 ),
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart3",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              )
+                ]
+            ), style={"padding": "0px 20px 0px 20px"}
+        ),
 
         html.Br(), html.Br(),
 
-        html.Div(dcc.Graph(id="chart5",
-                           figure={},
-                           config={"displayModeBar": False}  # hide plotly controls
-                           ),
-                 style={"padding": "0px 20px 0px 20px"}
-                 ),
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart4",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              ),
+
+                ]
+            ), style={"padding": "0px 20px 0px 20px"}
+        ),
 
         html.Br(), html.Br(),
 
-        html.Div(dcc.Graph(id="chart6",
-                           figure={},
-                           config={"displayModeBar": False}  # hide plotly controls
-                           ),
-                 style={"padding": "0px 20px 0px 20px"}
-                 ),
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart5",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              ),
+
+                ]
+            ), style={"padding": "0px 20px 0px 20px"}
+        ),
+
+        html.Br(), html.Br(),
+
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart6",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              ),
+
+                ]
+            ), style={"padding": "0px 20px 0px 20px"}
+        ),
 
         html.Br(), html.Br(),
 
         html.Div(
             [
-                dash_table.DataTable(
-                    id="datatable",
-                    # columns=[{"name": i, "id": i} for i in df_tbl],
-                    columns=[
-                        {
-                            "id": "Row",
-                            "name": "Row",
-                            "type": "numeric"
-                        },
-                        {
-                            "id": "Local Authority",
-                            "name": "Local Authority (Lower Tier)",
-                            "type": "text"
-                        },
-                        {
-                            "id": "New Cases",
-                            "name": "New Cases",
-                            "type": "numeric",
-                            "format": Format
-                                (
-                                precision=0,
-                                group=",",
-                                scheme=Scheme.fixed,
-                                symbol=""
-                            )
-                        },
-                        {
-                            "id": "New Deaths",
-                            "name": "New Deaths",
-                            "type": "numeric",
-                            "format": Format
-                                (
-                                precision=0,
-                                group=",",
-                                scheme=Scheme.fixed,
-                                symbol="",
-                            )
-                        },
-                        {
-                            "id": "Total Cases",
-                            "name": "Total Cases",
-                            "type": "numeric",
-                            "format": Format
-                                (
-                                precision=0,
-                                group=",",
-                                scheme=Scheme.fixed,
-                                symbol=""
-                            )
-                        },
-                        {
-                            "id": "Total Deaths",
-                            "name": "Total Deaths",
-                            "type": "numeric",
-                            "format": Format
-                                (
-                                precision=0,
-                                group=",",
-                                scheme=Scheme.fixed,
-                                symbol=""
-                            )
-                        }
-                    ],
+                dcc.Loading(
+                    children=
+                    [
+                        dash_table.DataTable(
+                            id="datatable",
+                            # columns=[{"name": i, "id": i} for i in df_tbl],
+                            columns=[
+                                {
+                                    "id": "Row",
+                                    "name": "Row",
+                                    "type": "numeric"
+                                },
+                                {
+                                    "id": "Local Authority",
+                                    "name": "Local Authority (Lower Tier)",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "New Cases",
+                                    "name": "New Cases",
+                                    "type": "numeric",
+                                    "format": Format
+                                        (
+                                        precision=0,
+                                        group=",",
+                                        scheme=Scheme.fixed,
+                                        symbol=""
+                                    )
+                                },
+                                {
+                                    "id": "New Deaths",
+                                    "name": "New Deaths",
+                                    "type": "numeric",
+                                    "format": Format
+                                        (
+                                        precision=0,
+                                        group=",",
+                                        scheme=Scheme.fixed,
+                                        symbol="",
+                                    )
+                                },
+                                {
+                                    "id": "Total Cases",
+                                    "name": "Total Cases",
+                                    "type": "numeric",
+                                    "format": Format
+                                        (
+                                        precision=0,
+                                        group=",",
+                                        scheme=Scheme.fixed,
+                                        symbol=""
+                                    )
+                                },
+                                {
+                                    "id": "Total Deaths",
+                                    "name": "Total Deaths",
+                                    "type": "numeric",
+                                    "format": Format
+                                        (
+                                        precision=0,
+                                        group=",",
+                                        scheme=Scheme.fixed,
+                                        symbol=""
+                                    )
+                                }
+                            ],
 
-                    sort_action="native",  # native / none
-                    sort_mode="single",  # single / multi
-                    filter_action="none",  # native / none
-                    page_action="native",  # native / none
-                    page_current=0,  # current page number
-                    page_size=datatable_rows,  # rows per page
-                    fixed_rows={"headers": True},
-                    fixed_columns={"headers": True, "data": 2},
+                            sort_action="native",  # native / none
+                            sort_mode="single",  # single / multi
+                            filter_action="none",  # native / none
+                            page_action="native",  # native / none
+                            page_current=0,  # current page number
+                            page_size=datatable_rows,  # rows per page
+                            fixed_rows={"headers": True},
+                            fixed_columns={"headers": True, "data": 2},
 
-                    style_table={"overflowX": "auto", "overflowY": "auto",
-                                 "minWidth": "100%",
-                                 "height": "500px"},
+                            style_table={"overflowX": "auto", "overflowY": "auto",
+                                         "minWidth": "100%",
+                                         "height": "500px"},
 
-                    style_header={
-                        "bold": True,
-                        "color": "black",
-                        "backgroundColor": "lightgrey",
-                        "whiteSpace": "normal",
-                        "height": "56px"
-                    },
-
-                    style_cell={
-                        "color": textcol,
-                        "backgroundColor": bgcol,
-                        "font-family": "Verdana",
-                        "font_size": fontsize,
-                        "minWidth": 64,
-                        "maxWidth": 160,
-                        "padding": "0px 10px 0px 10px"
-                    },
-
-                    style_cell_conditional=[
-                        {
-                            "if": {
-                                "column_id": "Local Authority"
+                            style_header={
+                                "bold": True,
+                                "color": "black",
+                                "backgroundColor": "lightgrey",
+                                "whiteSpace": "normal",
+                                "height": "56px"
                             },
-                            "width": "120px"},
-                        {
-                            "if": {
-                                "column_id": "New Cases"
-                            },
-                            "color": "white",
-                            "backgroundColor": new_cases_col},
-                        {
-                            "if": {
-                                "column_id": "New Deaths"
-                            },
-                            "color": "white",
-                            "backgroundColor": new_deaths_col},
-                        {
-                            "if": {
-                                "column_id": "Total Cases"
-                            },
-                            "color": "white",
-                            "backgroundColor": tot_cases_col},
-                        {
-                            "if": {
-                                "column_id": "Total Deaths"
-                            },
-                            "color": "white",
-                            "backgroundColor": tot_deaths_col
-                        },
-                    ],
 
-                    style_data={
-                        # wrap long cell content into multiple lines
-                        "whiteSpace": "normal",
-                        "height": "auto"
-                    },
+                            style_cell={
+                                "color": textcol,
+                                "backgroundColor": bgcol,
+                                "font-family": "Verdana",
+                                "font_size": fontsize,
+                                "minWidth": 64,
+                                "maxWidth": 160,
+                                "padding": "0px 10px 0px 10px"
+                            },
 
-                    css=[
-                        {
-                            "selector": ".row",
-                            "rule": "margin: 0; flex-wrap: nowrap"
-                        }
+                            style_cell_conditional=[
+                                {
+                                    "if": {
+                                        "column_id": "Local Authority"
+                                    },
+                                    "width": "120px"},
+                                {
+                                    "if": {
+                                        "column_id": "New Cases"
+                                    },
+                                    "color": "white",
+                                    "backgroundColor": new_cases_col},
+                                {
+                                    "if": {
+                                        "column_id": "New Deaths"
+                                    },
+                                    "color": "white",
+                                    "backgroundColor": new_deaths_col},
+                                {
+                                    "if": {
+                                        "column_id": "Total Cases"
+                                    },
+                                    "color": "white",
+                                    "backgroundColor": tot_cases_col},
+                                {
+                                    "if": {
+                                        "column_id": "Total Deaths"
+                                    },
+                                    "color": "white",
+                                    "backgroundColor": tot_deaths_col
+                                },
+                            ],
+
+                            style_data={
+                                # wrap long cell content into multiple lines
+                                "whiteSpace": "normal",
+                                "height": "auto"
+                            },
+
+                            css=[
+                                {
+                                    "selector": ".row",
+                                    "rule": "margin: 0; flex-wrap: nowrap"
+                                }
+                            ]
+                        )
                     ]
                 )
             ], style={"padding": "0px 20px 0px 20px"}
