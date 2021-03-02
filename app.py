@@ -7,14 +7,8 @@ import dash_table
 from dash_table.Format import Format, Scheme, Sign, Symbol
 import plotly.graph_objects as go
 import pandas as pd
-from openpyxl import load_workbook
-import urllib.request
 import datetime
 from datetime import date
-
-# New data >>>
-url_ltla = "https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesByPublishDate&metric=newCasesByPublishDate&metric=newDeaths28DaysByPublishDate&metric=cumDeaths28DaysByPublishDate&format=csv"
-url_uk = "https://api.coronavirus.data.gov.uk/v2/data?areaType=overview&metric=cumCasesByPublishDate&metric=newCasesByPublishDate&metric=newDeaths28DaysByPublishDate&metric=cumDeaths28DaysByPublishDate&format=csv"
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
                 meta_tags=[{"name": "viewport",
@@ -40,10 +34,10 @@ fontsize = 15
 
 today = date.today().isoformat()
 upload_date = today
-admin_pass = "xxxxxx"
 
-# Read covid file & interrogate dates
-df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
+# Read covid files
+df = pd.read_excel("covid_data.xlsx")
+df_tot = pd.read_excel("covid_totals.xlsx")
 
 date_min = "2020-08-12"  # df["date"].min()
 date_max = df["date"].max()
@@ -72,72 +66,82 @@ app.layout = html.Div(
 
         html.Br(),
 
-        dbc.Col(
-            dbc.Card(
-                [
-                    html.H3("New Cases", className="card-title"),
-                    html.H1(
-                        id="new_cases",
-                        className="card-value",
-                        style={"font-weight": "bold"}
+        dbc.Row(
+            [
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            html.H3("New Cases", className="card-title"),
+                            html.H2(
+                                id="new_cases",
+                                className="card-value",
+                                style={"font-weight": "bold"}
+                            )
+                        ],
+                        style={"color": "white",
+                               "background": new_cases_col,
+                               "text-align": "center"
+                               }
                     )
-                ],
-                style={"color": "white",
-                       "background": new_cases_col,
-                       "text-align": "center"
-                       }
-            )
+                ),
+
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            html.H3("New Deaths", className="card-title"),
+                            html.H2(
+                                id="new_deaths",
+                                className="card-value",
+                                style={"font-weight": "bold"}
+                            )
+                        ],
+                        style={"color": "white",
+                               "background": new_deaths_col,
+                               "text-align": "center"
+                               }
+                    )
+                )
+            ], style={"padding": "0px 20px 0px 20px"}
         ),
 
-        dbc.Col(
-            dbc.Card(
-                [
-                    html.H3("New Deaths", className="card-title"),
-                    html.H1(
-                        id="new_deaths",
-                        className="card-value",
-                        style={"font-weight": "bold"}
-                    )
-                ],
-                style={"color": "white",
-                       "background": new_deaths_col,
-                       "text-align": "center"
-                       }
-            )
-        ),
+        html.Br(),
 
-        dbc.Col(
-            dbc.Card(
-                [
-                    html.H3("Total Cases", className="card-title"),
-                    html.H1(
-                        id="total_cases",
-                        className="card-value",
-                        style={"font-weight": "bold"}
+        dbc.Row(
+            [
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            html.H3("Total Cases", className="card-title"),
+                            html.H2(
+                                id="total_cases",
+                                className="card-value",
+                                style={"font-weight": "bold"}
+                            )
+                        ],
+                        style={"color": "white",
+                               "background": "darkgrey",
+                               "text-align": "center"
+                               }
                     )
-                ],
-                style={"color": "white",
-                       "background": "darkgrey",
-                       "text-align": "center"
-                       }
-            )
-        ),
+                ),
 
-        dbc.Col(
-            dbc.Card(
-                [
-                    html.H3("Total Deaths", className="card-title"),
-                    html.H1(
-                        id="total_deaths",
-                        className="card-value",
-                        style={"font-weight": "bold"}
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            html.H3("Total Deaths", className="card-title"),
+                            html.H2(
+                                id="total_deaths",
+                                className="card-value",
+                                style={"font-weight": "bold"}
+                            )
+                        ],
+                        style={"color": "white",
+                               "background": "dimgrey",
+                               "text-align": "center"
+                               }
                     )
-                ],
-                style={"color": "white",
-                       "background": "dimgrey",
-                       "text-align": "center"
-                       }
-            )
+                )
+            ], style={"padding": "0px 20px 0px 20px"}
         ),
 
         html.Br(), html.Br(),
@@ -145,20 +149,24 @@ app.layout = html.Div(
         dbc.Row(
             [
                 dbc.Col(
-                    html.Div(
-                        dcc.DatePickerSingle(
-                            id="date_picker",
-                            date=date_max,
-                            display_format="MMM D, YYYY",
-                            day_size=50,
-                            initial_visible_month=date_max,
-                            min_date_allowed=date_min,
-                            max_date_allowed=today
-                        )
-                    )
-                ),
+                    [
+                        html.P("Select Date"),
 
-                html.Br(), html.Br(),
+                        html.Div(
+                            dcc.DatePickerSingle(
+                                id="date_picker",
+                                clearable=True,
+                                with_portal=True,
+                                date=date_max,
+                                display_format="MMM D, YYYY",
+                                day_size=50,
+                                initial_visible_month=date_max,
+                                min_date_allowed=date_min,
+                                max_date_allowed=date_max
+                            )
+                        )
+                    ]
+                ),
 
                 dbc.Col(
                     [
@@ -431,42 +439,6 @@ app.layout = html.Div(
             ], style={"padding": "0px 20px 0px 20px"}
         ),
 
-        html.Br(), html.Br(),
-
-        dbc.Row(html.H2("Select date for data upload (password required)"),
-                style={"padding": "0px 0px 0px 50px"}
-                ),
-
-        html.Br(),
-
-        dbc.Col(
-            dcc.Input(id="admin_pw", type="password", placeholder="Admin PIN"),
-            width={"size": 6, "offset": 1}
-        ),
-
-        html.Br(), html.Br(),
-
-        dbc.Col(
-            html.Div(
-                dcc.DatePickerSingle(
-                    id="date_picker2",
-                    date=today,
-                    display_format="MMM D, YYYY",
-                    day_size=50,
-                    initial_visible_month=date_max,
-                    min_date_allowed=date_min,
-                    max_date_allowed=today
-                )
-            ),
-            width={"size": 2, "offset": 1}
-        ),
-
-        html.Br(), html.Br(),
-
-        dbc.Col(
-            html.Div(id="message", children="", style={"padding": "0px 20px 0px 20px"})
-        ),
-
         html.Br(), html.Br(), html.Br(),
 
         dbc.Row(html.Label(["Data Source: ",
@@ -497,6 +469,7 @@ app.layout = html.Div(
 )
 def update_datatable(selected_date, selected_auth, selected_data):
     global df
+    print(str(datetime.datetime.now()), "start update_datatable...")
 
     if selected_data == "daily":
         cases = "New Cases"
@@ -513,7 +486,7 @@ def update_datatable(selected_date, selected_auth, selected_data):
     df1 = df1.sort_values(by=[cases], ascending=False)
     df1["Row"] = df1.reset_index().index
     df1["Row"] += 1
-
+    print(str(datetime.datetime.now()), "finish update_datatable...")
     return df1.to_dict("records")
 
 
@@ -531,7 +504,7 @@ def update_datatable(selected_date, selected_auth, selected_data):
 )
 def update_graph(selected_date, selected_auth, selected_data):
     global df
-
+    print(str(datetime.datetime.now()), "start update_graph...")
     if selected_data == "daily":
         cases = "New Cases"
         deaths = "New Deaths"
@@ -551,7 +524,6 @@ def update_graph(selected_date, selected_auth, selected_data):
     fig1 = go.Figure(go.Bar(orientation="h",
                             x=data_fig1[cases],
                             y=data_fig1["Local Authority"],
-                            # text=data_fig1["Local Authority"],
                             texttemplate="%{y} - %{x:,}",
                             textposition="inside",
                             insidetextanchor="end"
@@ -601,7 +573,6 @@ def update_graph(selected_date, selected_auth, selected_data):
     fig2 = go.Figure(go.Bar(orientation="h",
                             x=data_fig2[deaths],
                             y=data_fig2["Local Authority"],
-                            # text=data_fig2["Local Authority"],
                             texttemplate="%{y} - %{x:,}",
                             textposition="inside",
                             insidetextanchor="end"
@@ -644,7 +615,7 @@ def update_graph(selected_date, selected_auth, selected_data):
     fig2.update_traces(marker_color=new_deaths_col,
                        hovertemplate="%{y}<br>%{x:,}<extra></extra>"
                        )
-
+    print(str(datetime.datetime.now()), "finish update_graph...")
     return fig1, fig2
 
 
@@ -661,7 +632,7 @@ def update_graph(selected_date, selected_auth, selected_data):
 )
 def update_graph2(selected_date, selected_auth):
     global df
-
+    print(str(datetime.datetime.now()), "start update_graph2...")
     if (selected_auth is None or selected_auth == []):
         dfa = df[df["date"].isin([selected_date])]
         dfa = dfa.sort_values(by="New Cases", ascending=False)[:topn]
@@ -770,7 +741,7 @@ def update_graph2(selected_date, selected_auth):
                                   hovertemplate="%{y:,}<br>%{x}<extra></extra>"
                                   )
                        )
-
+    print(str(datetime.datetime.now()), "finish update_graph2...")
     return fig3, fig4
 
 
@@ -784,7 +755,7 @@ def update_graph2(selected_date, selected_auth):
 )
 def totals_timeline(none):
     date_list = df["date"].unique()
-
+    print(str(datetime.datetime.now()), "start totals_timeline...")
     fig5 = go.Figure()
     fig5.update_layout(
         title="<b>Daily Cases Over Time</b>",
@@ -821,8 +792,8 @@ def totals_timeline(none):
 
     tot_cases = []
     for dt in date_list:
-        dfx = df[df["date"] == dt]
-        tc = dfx["New Cases"].sum()
+        dfx = df_tot[df_tot["date"] == dt]
+        tc = dfx["newCasesByPublishDate"].sum()
         tot_cases.append(tc)
 
     fig5.add_trace(go.Scatter(x=date_list,
@@ -871,8 +842,8 @@ def totals_timeline(none):
 
     tot_deaths = []
     for dt in date_list:
-        dfx = df[df["date"] == dt]
-        td = dfx["New Deaths"].sum()
+        dfx = df_tot[df_tot["date"] == dt]
+        td = dfx["newDeaths28DaysByPublishDate"].sum()
         tot_deaths.append(td)
 
     fig6.add_trace(go.Scatter(x=date_list,
@@ -884,7 +855,7 @@ def totals_timeline(none):
                               hovertemplate="%{y:,}<br>%{x}<extra></extra>"
                               )
                    )
-
+    print(str(datetime.datetime.now()), "finish_totals_timeline...")
     return fig5, fig6
 
 
@@ -899,111 +870,15 @@ def totals_timeline(none):
     Input("date_picker", "date")
 )
 def update_summary(selected_date):
-    global df
-
-    # Attempt to read data for selected date
-    url = url_uk + "&release=" + selected_date
-
-    try:
-        df1 = pd.read_csv(url)
-        df1 = df1[df1["date"] == selected_date]
-
-    except urllib.request.HTTPError as e:
-        print(e)
+    print(str(datetime.datetime.now()), "start update_summary...")
+    df1 = df_tot[df_tot["date"] == selected_date]
 
     new_cases = format(int(df1["newCasesByPublishDate"]), ",d")
     new_deaths = format(int(df1["newDeaths28DaysByPublishDate"]), ",d")
     total_cases = format(int(df1["cumCasesByPublishDate"]), ",d")
     total_deaths = format(int(df1["cumDeaths28DaysByPublishDate"]), ",d")
-
+    print(str(datetime.datetime.now()), "finish update_summary...")
     return new_cases, new_deaths, total_cases, total_deaths
-
-
-# Admin (Upload New Data) ----------
-@app.callback(
-    Output("message", "children"),
-    [
-        Input("date_picker2", "date"),
-        Input("admin_pw", "value")
-    ],
-    prevent_initial_call=True
-)
-def submit_upload(selected_date, password):
-    global date_list
-
-    message = ""
-    if password == admin_pass:
-        pass
-    else:
-        message = " Please enter valid pin"
-        return message
-
-    d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
-
-    # Check if data already uploaded
-    if selected_date in date_list:
-        message = d.strftime("%b %d, %Y") + " data already uploaded"
-        return message
-
-    # Attempt to read data for selected date
-    url = url_ltla + "&release=" + selected_date
-
-    try:
-        print("step 1 of 3: read ", url)
-        df_load = pd.read_csv(url)
-        print("step 2 of 3: extract data for ", d.strftime("%b %d, %Y"))
-        df_load = df_load[df_load["date"] == selected_date]
-
-        print("step 3 of 3: write to covid file...")
-        writer = pd.ExcelWriter("covid_data.xlsx", engine="openpyxl")
-        writer.book = load_workbook("covid_data.xlsx")
-        writer.sheets = {ws.title: ws for ws in writer.book.worksheets}
-
-        for sheetname in writer.sheets:
-            df_load.to_excel(writer,
-                             sheet_name=sheetname,
-                             index=False,
-                             header=False,
-                             startrow=writer.sheets[sheetname].max_row)
-            writer.save()
-
-        message = d.strftime("%b %d, %Y") + " data uploaded"
-        refresh_data()
-
-    except urllib.request.HTTPError as e:
-        message = d.strftime("%b %d, %Y") + " data not yet available"
-
-    except IOError as e:
-        message = d.strftime("%b %d, %Y") + "[" + str(e) + "]"
-
-    print(message)
-
-    return message
-
-
-# Refresh data after each data upload ----------
-def refresh_data():
-    global df, df_tbl, date_min, date_max, date_list
-
-    df = pd.read_excel("covid_data.xlsx")  # , engine="openpyxl")
-
-    date_min = df["date"].min()
-    date_max = df["date"].max()
-
-    date_list = [str(d) for d in df["date"].unique()]  # list of all dates uploaded
-
-    # Rename columns
-    df = df.rename(columns=
-    {
-        "areaName": "Local Authority",
-        "cumCasesByPublishDate": "Total Cases",
-        "cumDeaths28DaysByPublishDate": "Total Deaths",
-        "newCasesByPublishDate": "New Cases",
-        "newDeaths28DaysByPublishDate": "New Deaths",
-    }
-    )
-
-    df_tbl = df.copy()
 
 
 if __name__ == "__main__":
