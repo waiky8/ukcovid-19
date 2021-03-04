@@ -71,14 +71,14 @@ app.layout = html.Div(
                 dbc.Col(
                     [
                         html.P("Covid Data:"),
-                        html.Div(id="message1", children="")
+                        html.Div(id="message1", children="", style={"color": "steelblue", "font-weight": "bold"})
                     ]
                 ),
 
                 dbc.Col(
                     [
                         html.P("Covid Totals:"),
-                        html.Div(id="message2", children="")
+                        html.Div(id="message2", children="", style={"color": "steelblue", "font-weight": "bold"})
                     ]
                 )
             ], style={"padding": "0px 20px 0px 20px"}
@@ -102,7 +102,7 @@ def update_data(selected_date):
 
     # Daily Data
     if selected_date in date_list_daily:
-        message1 = d.strftime("%b %d, %Y") + " daily data already uploaded"
+        message1 = "[" + d.strftime("%b %d, %Y") + "] daily data already uploaded 👍"
 
     else:
         # Attempt to read data for selected date
@@ -129,17 +129,17 @@ def update_data(selected_date):
                 writer.save()
                 date_list_daily.append(selected_date)
 
-            message1 = d.strftime("%b %d, %Y") + " daily data uploaded"
+            message1 = "[" + d.strftime("%b %d, %Y") + "] daily data uploaded ✔️"
 
         except urllib.request.HTTPError as e:
-            message1 = d.strftime("%b %d, %Y") + " daily data not yet available"
+            message1 = "[" + d.strftime("%b %d, %Y") + "] daily data not yet available ❌"
 
         except IOError as e:
-            message1 = d.strftime("%b %d, %Y") + "[" + str(e) + "]"
+            message1 = "[" + d.strftime("%b %d, %Y") + "] " + str(e)
 
     # Totals Data
     if selected_date in date_list_totals:
-        message2 = d.strftime("%b %d, %Y") + " totals data already uploaded"
+        message2 = "[" + d.strftime("%b %d, %Y") + "] totals data already uploaded 👍"
 
     else:
         # Attempt to read data for selected date
@@ -166,13 +166,13 @@ def update_data(selected_date):
                 writer.save()
                 date_list_totals.append(selected_date)
 
-            message2 = d.strftime("%b %d, %Y") + " totals data uploaded"
+            message2 = "[" + d.strftime("%b %d, %Y") + "] totals data uploaded ✔️"
 
         except urllib.request.HTTPError as e:
-            message2 = d.strftime("%b %d, %Y") + " totals data not yet available"
+            message2 = "[" + d.strftime("%b %d, %Y") + "] totals data not yet available ❌"
 
         except IOError as e:
-            message2 = d.strftime("%b %d, %Y") + "[" + str(e) + "]"
+            message2 = "[" + d.strftime("%b %d, %Y") + "] " + str(e)
 
     print(str(datetime.datetime.now()), message1)
     print(str(datetime.datetime.now()), message2)

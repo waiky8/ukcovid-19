@@ -21,14 +21,14 @@ app.title = "UK Covid-19"
 
 # App parameters
 topn = 5  # Show highest n values
-chart_h = 360  # height of charts
-datatable_rows = 500
-textcol = "steelblue"  # text colour
+chart_h = 320  # height of charts
+datatable_rows = 10
+textcol = "dimgrey"  # text colour
 bgcol = "white"  # background colour of charts, table etc.
-new_cases_col = "steelblue"
-new_deaths_col = "firebrick"
-tot_cases_col = "darkgrey"
-tot_deaths_col = "dimgrey"
+new_cases_col = "teal"
+new_deaths_col = "midnightblue"
+tot_cases_col = "mediumslateblue"
+tot_deaths_col = "slateblue"
 grid_col = "gainsboro"
 fontsize = 15
 
@@ -119,7 +119,7 @@ app.layout = html.Div(
                             )
                         ],
                         style={"color": "white",
-                               "background": "darkgrey",
+                               "background": tot_cases_col,
                                "text-align": "center"
                                }
                     )
@@ -136,7 +136,7 @@ app.layout = html.Div(
                             )
                         ],
                         style={"color": "white",
-                               "background": "dimgrey",
+                               "background": tot_deaths_col,
                                "text-align": "center"
                                }
                     )
@@ -223,65 +223,6 @@ app.layout = html.Div(
                               figure={},
                               config={"displayModeBar": False}  # hide plotly controls
                               ),
-                ]
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
-
-        html.Br(), html.Br(),
-
-        html.Div(
-            dcc.Loading(
-                children=
-                [
-                    dcc.Graph(id="chart3",
-                              figure={},
-                              config={"displayModeBar": False}  # hide plotly controls
-                              )
-                ]
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
-
-        html.Br(), html.Br(),
-
-        html.Div(
-            dcc.Loading(
-                children=
-                [
-                    dcc.Graph(id="chart4",
-                              figure={},
-                              config={"displayModeBar": False}  # hide plotly controls
-                              ),
-
-                ]
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
-
-        html.Br(), html.Br(),
-
-        html.Div(
-            dcc.Loading(
-                children=
-                [
-                    dcc.Graph(id="chart5",
-                              figure={},
-                              config={"displayModeBar": False}  # hide plotly controls
-                              ),
-
-                ]
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
-
-        html.Br(), html.Br(),
-
-        html.Div(
-            dcc.Loading(
-                children=
-                [
-                    dcc.Graph(id="chart6",
-                              figure={},
-                              config={"displayModeBar": False}  # hide plotly controls
-                              ),
-
                 ]
             ), style={"padding": "0px 20px 0px 20px"}
         ),
@@ -441,6 +382,69 @@ app.layout = html.Div(
 
         html.Br(), html.Br(), html.Br(),
 
+        dbc.Row(
+            html.P("*Defaults to 'Sheffield' if no local authority selected"),
+            style={"font-style": "italic", "padding": "0px 20px 0px 20px"}
+        ),
+
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart3",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              )
+                ]
+            ), style={"padding": "0px 20px 0px 20px"}
+        ),
+
+        html.Br(), html.Br(),
+
+        # html.Div(
+        #     dcc.Loading(
+        #         children=
+        #         [
+        #             dcc.Graph(id="chart4",
+        #                       figure={},
+        #                       config={"displayModeBar": False}  # hide plotly controls
+        #                       )
+        #         ]
+        #     ), style={"padding": "0px 20px 0px 20px"}
+        # ),
+        #
+        # html.Br(), html.Br(),
+
+        html.Div(
+            dcc.Loading(
+                children=
+                [
+                    dcc.Graph(id="chart5",
+                              figure={},
+                              config={"displayModeBar": False}  # hide plotly controls
+                              )
+                ]
+            ), style={"padding": "0px 20px 0px 20px"}
+        ),
+
+        # html.Br(), html.Br(),
+        #
+        # html.Div(
+        #     dcc.Loading(
+        #         children=
+        #         [
+        #             dcc.Graph(id="chart6",
+        #                       figure={},
+        #                       config={"displayModeBar": False}  # hide plotly controls
+        #                       )
+        #         ]
+        #     ), style={"padding": "0px 20px 0px 20px"}
+        # ),
+        #
+        # html.Br(), html.Br(),
+
+        html.Br(), html.Br(), html.Br(),
+
         dbc.Row(html.Label(["Data Source: ",
                             html.A("GovUK", href="https://coronavirus.data.gov.uk/details/download",
                                    target="_blank")]),
@@ -468,8 +472,7 @@ app.layout = html.Div(
     ]
 )
 def update_datatable(selected_date, selected_auth, selected_data):
-    global df
-    print(str(datetime.datetime.now()), "start update_datatable...")
+    print(str(datetime.datetime.now()), "[1] start update_datatable...")
 
     if selected_data == "daily":
         cases = "New Cases"
@@ -486,7 +489,9 @@ def update_datatable(selected_date, selected_auth, selected_data):
     df1 = df1.sort_values(by=[cases], ascending=False)
     df1["Row"] = df1.reset_index().index
     df1["Row"] += 1
-    print(str(datetime.datetime.now()), "finish update_datatable...")
+
+    print(str(datetime.datetime.now()), "[1] finish update_datatable...")
+
     return df1.to_dict("records")
 
 
@@ -503,8 +508,7 @@ def update_datatable(selected_date, selected_auth, selected_data):
     ]
 )
 def update_graph(selected_date, selected_auth, selected_data):
-    global df
-    print(str(datetime.datetime.now()), "start update_graph...")
+    print(str(datetime.datetime.now()), "[2] start update_graph...")
     if selected_data == "daily":
         cases = "New Cases"
         deaths = "New Deaths"
@@ -534,7 +538,7 @@ def update_graph(selected_date, selected_auth, selected_data):
 
     fig1.update_layout(title="<b>" + cases + ": " + d.strftime("%b %d, %Y") + "</b>",
                        title_font_color=textcol,
-                       font_color=textcol,
+                       font_color="white",
                        font_size=fontsize,
                        showlegend=False,
                        xaxis={"categoryorder": "total descending",
@@ -581,7 +585,7 @@ def update_graph(selected_date, selected_auth, selected_data):
 
     fig2.update_layout(title="<b>" + deaths + ": " + d.strftime("%b %d, %Y") + "</b>",
                        title_font_color=textcol,
-                       font_color=textcol,
+                       font_color="white",
                        font_size=fontsize,
                        showlegend=False,
                        xaxis={"categoryorder": "total descending",
@@ -615,28 +619,23 @@ def update_graph(selected_date, selected_auth, selected_data):
     fig2.update_traces(marker_color=new_deaths_col,
                        hovertemplate="%{y}<br>%{x:,}<extra></extra>"
                        )
-    print(str(datetime.datetime.now()), "finish update_graph...")
+
+    print(str(datetime.datetime.now()), "[2] finish update_graph...")
     return fig1, fig2
 
 
 # Timeline Charts Set 1 ----------
 @app.callback(
-    [
-        Output("chart3", "figure"),
-        Output("chart4", "figure")
-    ],
+    Output("chart3", "figure"),
     [
         Input("date_picker", "date"),
         Input("locauth_drop", "value")
     ]
 )
 def update_graph2(selected_date, selected_auth):
-    global df
-    print(str(datetime.datetime.now()), "start update_graph2...")
+    print(str(datetime.datetime.now()), "[3] start update_graph2...")
     if (selected_auth is None or selected_auth == []):
-        dfa = df[df["date"].isin([selected_date])]
-        dfa = dfa.sort_values(by="New Cases", ascending=False)[:topn]
-        locauth_list = dfa["Local Authority"].unique()
+        locauth_list = ["Sheffield"]
         df1 = df[df["Local Authority"].isin(locauth_list)]
     else:
         df1 = df[df["Local Authority"].isin(selected_auth)]
@@ -644,7 +643,7 @@ def update_graph2(selected_date, selected_auth):
 
     fig3 = go.Figure()
     fig3.update_layout(
-        title="<b>Cases by Local Authority</b>",
+        title="<b>Local Authority Cases</b>",
         title_font_color=textcol,
         font_color=textcol,
         font_size=fontsize,
@@ -692,73 +691,71 @@ def update_graph2(selected_date, selected_auth):
                                   )
                        )
 
-    fig4 = go.Figure()
-    fig4.update_layout(
-        title="<b>Deaths by Local Authority</b>",
-        title_font_color=textcol,
-        font_color=textcol,
-        font_size=fontsize,
-        plot_bgcolor=bgcol,
-        paper_bgcolor=bgcol,
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        xaxis={"categoryorder": "total descending",
-               "title": "",
-               "tickangle": 0,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        yaxis={"title": "",
-               "autorange": True,
-               "visible": True,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01
-        ),
-        hoverlabel=dict(
-            # bgcolor="white",
-            font_size=fontsize,
-            font_family="Rockwell"
-        )
-    )
+    # fig4 = go.Figure()
+    # fig4.update_layout(
+    #     title="<b>Deaths by Local Authority</b>",
+    #     title_font_color=textcol,
+    #     font_color=textcol,
+    #     font_size=fontsize,
+    #     plot_bgcolor=bgcol,
+    #     paper_bgcolor=bgcol,
+    #     height=chart_h,
+    #     margin=dict(l=0, r=0, t=50, b=0),
+    #     xaxis={"categoryorder": "total descending",
+    #            "title": "",
+    #            "tickangle": 0,
+    #            "showgrid": True,
+    #            "zeroline": False,
+    #            "gridcolor": grid_col,
+    #            "zerolinecolor": grid_col,
+    #            "fixedrange": True},  # disable zoom & pan
+    #     yaxis={"title": "",
+    #            "autorange": True,
+    #            "visible": True,
+    #            "showgrid": True,
+    #            "zeroline": False,
+    #            "gridcolor": grid_col,
+    #            "zerolinecolor": grid_col,
+    #            "fixedrange": True},  # disable zoom & pan
+    #     legend=dict(
+    #         yanchor="top",
+    #         y=0.99,
+    #         xanchor="left",
+    #         x=0.01
+    #     ),
+    #     hoverlabel=dict(
+    #         # bgcolor="white",
+    #         font_size=fontsize,
+    #         font_family="Rockwell"
+    #     )
+    # )
+    #
+    # for la in locauth_list:
+    #     dfx = df1[df1["Local Authority"] == la]
+    #     fig4.add_trace(go.Scatter(x=dfx["date"],
+    #                               y=dfx["New Deaths"],
+    #                               mode="lines",
+    #                               name=la,
+    #                               showlegend=True,
+    #                               hovertemplate="%{y:,}<br>%{x}<extra></extra>"
+    #                               )
+    #                    )
 
-    for la in locauth_list:
-        dfx = df1[df1["Local Authority"] == la]
-        fig4.add_trace(go.Scatter(x=dfx["date"],
-                                  y=dfx["New Deaths"],
-                                  mode="lines",
-                                  name=la,
-                                  showlegend=True,
-                                  hovertemplate="%{y:,}<br>%{x}<extra></extra>"
-                                  )
-                       )
-    print(str(datetime.datetime.now()), "finish update_graph2...")
-    return fig3, fig4
+    print(str(datetime.datetime.now()), "[3] finish update_graph2...")
+    return fig3
 
 
 # Timeline Charts Set 2 ----------
 @app.callback(
-    [
-        Output("chart5", "figure"),
-        Output("chart6", "figure")
-    ],
+    Output("chart5", "figure"),
     Input("dummy", "children")
 )
 def totals_timeline(none):
     date_list = df["date"].unique()
-    print(str(datetime.datetime.now()), "start totals_timeline...")
+    print(str(datetime.datetime.now()), "[4] start totals_timeline...")
     fig5 = go.Figure()
     fig5.update_layout(
-        title="<b>Daily Cases Over Time</b>",
+        title="<b>UK Daily Cases</b>",
         title_font_color=textcol,
         font_color=textcol,
         font_size=fontsize,
@@ -806,57 +803,58 @@ def totals_timeline(none):
                               )
                    )
 
-    fig6 = go.Figure()
-    fig6.update_layout(
-        title="<b>Daily Deaths Over Time</b>",
-        title_font_color=textcol,
-        font_size=fontsize,
-        font_color=textcol,
-        plot_bgcolor=bgcol,
-        paper_bgcolor=bgcol,
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        showlegend=False,
-        xaxis={"categoryorder": "total descending",
-               "title": "",
-               "tickangle": 0,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        yaxis={"title": "",
-               "autorange": True,
-               "visible": True,
-               "showgrid": True,
-               "zeroline": False,
-               "gridcolor": grid_col,
-               "zerolinecolor": grid_col,
-               "fixedrange": True},  # disable zoom & pan
-        hoverlabel=dict(
-            bgcolor="white",
-            font_size=fontsize,
-            font_family="Rockwell"
-        )
-    )
+    # fig6 = go.Figure()
+    # fig6.update_layout(
+    #     title="<b>Daily Deaths Over Time</b>",
+    #     title_font_color=textcol,
+    #     font_size=fontsize,
+    #     font_color=textcol,
+    #     plot_bgcolor=bgcol,
+    #     paper_bgcolor=bgcol,
+    #     height=chart_h,
+    #     margin=dict(l=0, r=0, t=50, b=0),
+    #     showlegend=False,
+    #     xaxis={"categoryorder": "total descending",
+    #            "title": "",
+    #            "tickangle": 0,
+    #            "showgrid": True,
+    #            "zeroline": False,
+    #            "gridcolor": grid_col,
+    #            "zerolinecolor": grid_col,
+    #            "fixedrange": True},  # disable zoom & pan
+    #     yaxis={"title": "",
+    #            "autorange": True,
+    #            "visible": True,
+    #            "showgrid": True,
+    #            "zeroline": False,
+    #            "gridcolor": grid_col,
+    #            "zerolinecolor": grid_col,
+    #            "fixedrange": True},  # disable zoom & pan
+    #     hoverlabel=dict(
+    #         bgcolor="white",
+    #         font_size=fontsize,
+    #         font_family="Rockwell"
+    #     )
+    # )
+    #
+    # tot_deaths = []
+    # for dt in date_list:
+    #     dfx = df_tot[df_tot["date"] == dt]
+    #     td = dfx["newDeaths28DaysByPublishDate"].sum()
+    #     tot_deaths.append(td)
+    #
+    # fig6.add_trace(go.Scatter(x=date_list,
+    #                           y=tot_deaths,
+    #                           fill="tonexty",
+    #                           mode="none",
+    #                           name="Deaths",
+    #                           showlegend=True,
+    #                           hovertemplate="%{y:,}<br>%{x}<extra></extra>"
+    #                           )
+    #                )
 
-    tot_deaths = []
-    for dt in date_list:
-        dfx = df_tot[df_tot["date"] == dt]
-        td = dfx["newDeaths28DaysByPublishDate"].sum()
-        tot_deaths.append(td)
-
-    fig6.add_trace(go.Scatter(x=date_list,
-                              y=tot_deaths,
-                              fill="tonexty",
-                              mode="none",
-                              name="Deaths",
-                              showlegend=True,
-                              hovertemplate="%{y:,}<br>%{x}<extra></extra>"
-                              )
-                   )
-    print(str(datetime.datetime.now()), "finish_totals_timeline...")
-    return fig5, fig6
+    print(str(datetime.datetime.now()), "[4] finish_totals_timeline...")
+    return fig5
 
 
 # Summary counts ----------
@@ -870,14 +868,15 @@ def totals_timeline(none):
     Input("date_picker", "date")
 )
 def update_summary(selected_date):
-    print(str(datetime.datetime.now()), "start update_summary...")
+    print(str(datetime.datetime.now()), "[5] start update_summary...")
     df1 = df_tot[df_tot["date"] == selected_date]
 
     new_cases = format(int(df1["newCasesByPublishDate"]), ",d")
     new_deaths = format(int(df1["newDeaths28DaysByPublishDate"]), ",d")
     total_cases = format(int(df1["cumCasesByPublishDate"]), ",d")
     total_deaths = format(int(df1["cumDeaths28DaysByPublishDate"]), ",d")
-    print(str(datetime.datetime.now()), "finish update_summary...")
+
+    print(str(datetime.datetime.now()), "[5] finish update_summary...")
     return new_cases, new_deaths, total_cases, total_deaths
 
 
