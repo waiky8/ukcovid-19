@@ -7,7 +7,7 @@ import pandas as pd
 from openpyxl import load_workbook
 import urllib.request
 import datetime
-from datetime import date
+# from datetime import date
 
 # Data source >>>
 url_ltla = "https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesByPublishDate&metric=newCasesByPublishDate&metric=newDeaths28DaysByPublishDate&metric=cumDeaths28DaysByPublishDate&format=csv"
@@ -69,17 +69,39 @@ app.layout = html.Div(
         dbc.Row(
             [
                 dbc.Col(
-                    [
-                        html.P("Covid Data:"),
-                        html.Div(id="message1", children="", style={"color": "steelblue", "font-weight": "bold"})
-                    ]
+                    dbc.Card(
+                        [
+                            html.H3("Covid Data", className="card-title"),
+                            html.H2(
+                                html.Div(id="message1",
+                                         className="card-value",
+                                         style={"font-weight": "bold"}
+                                         )
+                            )
+                        ],
+                        style={"color": "white",
+                               "background": "teal",
+                               "text-align": "center"
+                               }
+                    )
                 ),
 
                 dbc.Col(
-                    [
-                        html.P("Covid Totals:"),
-                        html.Div(id="message2", children="", style={"color": "steelblue", "font-weight": "bold"})
-                    ]
+                    dbc.Card(
+                        [
+                            html.H3("Covid Totals", className="card-title"),
+                            html.H2(
+                                html.Div(id="message2",
+                                         className="card-value",
+                                         style={"font-weight": "bold"}
+                                         )
+                            )
+                        ],
+                        style={"color": "white",
+                               "background": "midnightblue",
+                               "text-align": "center"
+                               }
+                    )
                 )
             ], style={"padding": "0px 20px 0px 20px"}
         )
@@ -93,6 +115,8 @@ app.layout = html.Div(
      ],
     Input("date_picker", "date")
 )
+
+
 def update_data(selected_date):
     global date_list_daily, date_list_totals
 
@@ -102,7 +126,7 @@ def update_data(selected_date):
 
     # Daily Data
     if selected_date in date_list_daily:
-        message1 = "[" + d.strftime("%b %d, %Y") + "] daily data already uploaded 👍"
+        message1 = "[" + d.strftime("%b %d, %Y") + "] Already Uploaded 👍"
 
     else:
         # Attempt to read data for selected date
@@ -129,17 +153,17 @@ def update_data(selected_date):
                 writer.save()
                 date_list_daily.append(selected_date)
 
-            message1 = "[" + d.strftime("%b %d, %Y") + "] daily data uploaded ✔️"
+            message1 = "[" + d.strftime("%b %d, %Y") + "] Upload Complete ✔️"
 
         except urllib.request.HTTPError as e:
-            message1 = "[" + d.strftime("%b %d, %Y") + "] daily data not yet available ❌"
+            message1 = "[" + d.strftime("%b %d, %Y") + "] Not Available ❌"
 
         except IOError as e:
             message1 = "[" + d.strftime("%b %d, %Y") + "] " + str(e)
 
     # Totals Data
     if selected_date in date_list_totals:
-        message2 = "[" + d.strftime("%b %d, %Y") + "] totals data already uploaded 👍"
+        message2 = "[" + d.strftime("%b %d, %Y") + "] Already Uploaded 👍"
 
     else:
         # Attempt to read data for selected date
@@ -166,10 +190,10 @@ def update_data(selected_date):
                 writer.save()
                 date_list_totals.append(selected_date)
 
-            message2 = "[" + d.strftime("%b %d, %Y") + "] totals data uploaded ✔️"
+            message2 = "[" + d.strftime("%b %d, %Y") + "] Upload Complete ✔️"
 
         except urllib.request.HTTPError as e:
-            message2 = "[" + d.strftime("%b %d, %Y") + "] totals data not yet available ❌"
+            message2 = "[" + d.strftime("%b %d, %Y") + "] Not Available ❌"
 
         except IOError as e:
             message2 = "[" + d.strftime("%b %d, %Y") + "] " + str(e)
