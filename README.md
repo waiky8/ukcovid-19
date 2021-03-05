@@ -18,12 +18,12 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
 - Select local authorities<br><br>
 
 # Description of code/files:
- - app.py - main application code
- - app_data_load.py - code to retrieve latest data from GovUK
- - covid_data.xlsx - covid daily data at local authority level
- - covid_totals.xlsx - covid totals data<br><br>
+ - **app.py** - main application code
+ - **app_data_load.py** - code to retrieve latest data from GovUK
+ - **covid_data.xlsx** - covid daily data at local authority level
+ - **covid_totals.xlsx** - covid totals data<br><br>
  
-# Sample screenshots:<br><br>
+# Sample screenshots:
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot1.png)
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot2.png)
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot3.png)
