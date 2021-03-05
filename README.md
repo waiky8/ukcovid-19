@@ -22,9 +22,9 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
  - **app_data_load.py** - code to retrieve latest data from GovUK
  - **covid_data.xlsx** - covid daily data at local authority level
  - **covid_totals.xlsx** - covid totals data<br><br>
- 
+
 # Sample screenshots:
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot1.jpg)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot2.jpg)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot3.jpg)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot4.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_1.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_2.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_3.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_4.jpg)
