@@ -24,6 +24,7 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
  - **covid_totals.xlsx** - covid totals data<br><br>
  
 # Sample screenshots:
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot1.png)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot2.png)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot3.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot1.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot2.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot3.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot4.jpg)
