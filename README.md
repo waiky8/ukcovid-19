@@ -3,6 +3,8 @@ There are plenty of (UK) covid dashboards available but not many that show compa
 
 **Dash** comes with many wonderful features (graphs, datatable, date picker, checkboxes, radio buttons etc.) that have been incorporated into the application.<br><br>
 
+The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.herokuapp.com/<br><br>
+
 Features:
 - Summary of cases/deaths
 - Top 5 charts showing cases/deaths for daily or cumulative figures
@@ -13,8 +15,6 @@ Input options:
 - Select date (starting from Aug 12, 2020)
 - View daily data or cumulative data
 - Select local authorities<br><br>
-
-Check it out at https://ukcovid-19.herokuapp.com/<br><br>
 
 Sample.<br><br>
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot1.png)
