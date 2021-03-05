@@ -1,11 +1,11 @@
 # UK Covid-19 Dashboard
-There are plenty of (uk) covid dashboards available but not many that show comparisons at local authority level. So I decided to build one using **Dash**, written in **Python** and sourcing the data from GovUK site https://coronavirus.data.gov.uk/details/download.<br><br>
+There are plenty of (UK) covid dashboards available but not many that show comparisons at local authority level. So I decided to build one using **Dash**, written in **Python** and sourcing the data from GovUK site https://coronavirus.data.gov.uk/details/download.<br><br>
 
 **Dash** comes with many wonderful features (graphs, datatable, date picker, checkboxes, radio buttons etc.) that have been incorporated into the application.<br><br>
 
 Features:
 - Summary of cases/deaths
-- Top 5 cases/deaths charts
+- Top 5 charts showing cases/deaths for daily or cumulative figures
 - Graphical timeline of cases for selected local authorities
 - Graphical timeline of daily cases<br><br>
 
