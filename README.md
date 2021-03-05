@@ -3,20 +3,27 @@ There are plenty of (UK) covid dashboards available but not many that show compa
 
 **Dash** comes with many wonderful features (graphs, datatable, date picker, checkboxes, radio buttons etc.) that have been incorporated into the application.<br><br>
 
+Data is refreshed daily and uploaded.<br><br>
 The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.herokuapp.com/<br><br>
 
-Features:
+# Features:
 - Summary of cases/deaths
 - Top 5 charts showing cases/deaths for daily or cumulative figures
 - Graphical timeline of cases for selected local authorities
 - Graphical timeline of daily cases<br><br>
 
-Input options:
+# Input options:
 - Select date (starting from Aug 12, 2020)
 - View daily data or cumulative data
 - Select local authorities<br><br>
 
-Sample.<br><br>
+# Description of code/files:
+ - app.py - main application code
+ - app_data_load.py - code to retrieve latest data from GovUK
+ - covid_data.xlsx - covid daily data at local authority level
+ - covid_totals.xlsx - covid totals data<br><br>
+ 
+# Sample screenshots:<br><br>
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot1.png)
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot2.png)
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshots/screenshot3.png)
