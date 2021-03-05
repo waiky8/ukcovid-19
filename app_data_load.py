@@ -7,11 +7,16 @@ import pandas as pd
 from openpyxl import load_workbook
 import urllib.request
 import datetime
-# from datetime import date
 
-# Data source >>>
+################################################################################
+#  Data source from GovUK                                                      #
+################################################################################
 url_ltla = "https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesByPublishDate&metric=newCasesByPublishDate&metric=newDeaths28DaysByPublishDate&metric=cumDeaths28DaysByPublishDate&format=csv"
 url_uk = "https://api.coronavirus.data.gov.uk/v2/data?areaType=overview&metric=cumCasesByPublishDate&metric=newCasesByPublishDate&metric=newDeaths28DaysByPublishDate&metric=cumDeaths28DaysByPublishDate&format=csv"
+
+################################################################################
+#  Set up Dash application                                                     #
+################################################################################
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
                 meta_tags=[{"name": "viewport",
@@ -22,20 +27,26 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
 server = app.server
 app.title = "UK Covid-19"
 
+################################################################################
+#  Read input files and load lists and variables                               #
+################################################################################
+
 covid_daily_file = "covid_data.xlsx"
 covid_totals_file = "covid_totals.xlsx"
 
-# Read covid file & interrogate dates
 df_daily = pd.read_excel(covid_daily_file)
 df_totals = pd.read_excel(covid_totals_file)
 
-date_min = "2020-08-12"  # df["date"].min()
+date_min = "2020-08-12"  # data available from this date
 date_max = df_daily["date"].max()
 
 date_list_daily = [str(d) for d in df_daily["date"].unique()]
 date_list_totals = [str(d) for d in df_totals["date"].unique()]
 
-# Layout ----------
+################################################################################
+#  Define layout of Dash screen                                                #
+################################################################################
+
 app.layout = html.Div(
     [
         dbc.Row(dbc.Col(html.H1("UK Covid-19"), style={"text-align": "center", "font-weight": "bold"})),
@@ -66,48 +77,59 @@ app.layout = html.Div(
 
         html.Br(), html.Br(), html.Br(),
 
-        dbc.Row(
+        html.Div(
             [
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.H3("Covid Data", className="card-title"),
-                            html.H2(
-                                html.Div(id="message1",
-                                         className="card-value",
-                                         style={"font-weight": "bold"}
-                                         )
-                            )
-                        ],
-                        style={"color": "white",
-                               "background": "teal",
-                               "text-align": "center"
-                               }
-                    )
-                ),
+                html.Br(),
 
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.H3("Covid Totals", className="card-title"),
-                            html.H2(
-                                html.Div(id="message2",
-                                         className="card-value",
-                                         style={"font-weight": "bold"}
-                                         )
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            dbc.Card(
+                                [
+                                    html.H4("Covid Data", className="card-title"),
+                                    html.H3(
+                                        html.Div(id="message1",
+                                                 className="card-value",
+                                                 style={"font-weight": "bold"}
+                                                 )
+                                    )
+                                ],
+                                style={"color": "white",
+                                       "background": "teal",
+                                       "text-align": "center"
+                                       }
                             )
-                        ],
-                        style={"color": "white",
-                               "background": "midnightblue",
-                               "text-align": "center"
-                               }
-                    )
-                )
-            ], style={"padding": "0px 20px 0px 20px"}
-        )
-    ]
+                        ),
+
+                        dbc.Col(
+                            dbc.Card(
+                                [
+                                    html.H4("Covid Totals", className="card-title"),
+                                    html.H3(
+                                        html.Div(id="message2",
+                                                 className="card-value",
+                                                 style={"font-weight": "bold"}
+                                                 )
+                                    )
+                                ],
+                                style={"color": "white",
+                                       "background": "midnightblue",
+                                       "text-align": "center"
+                                       }
+                            )
+                        )
+                    ], style={"padding": "0px 30px 0px 30px"}
+                ),
+                html.Br(),
+            ], style={"background": "ghostwhite", "border-style": "groove"}
+        ),
+    ], style={"padding": "0px 30px 0px 30px"}
 )
 
+
+################################################################################
+#  Callback to display messages                                                #
+################################################################################
 
 @app.callback(
     [Output("message1", "children"),
@@ -115,22 +137,19 @@ app.layout = html.Div(
      ],
     Input("date_picker", "date")
 )
-
-
 def update_data(selected_date):
-    global date_list_daily, date_list_totals
-
     message1 = message2 = ""
 
     d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
 
-    # Daily Data
+    ################################################################################
+    #  Daily data                                                                  #
+    ################################################################################
     if selected_date in date_list_daily:
         message1 = "[" + d.strftime("%b %d, %Y") + "] Already Uploaded 👍"
 
     else:
-        # Attempt to read data for selected date
-        url = url_ltla + "&release=" + selected_date
+        url = url_ltla + "&release=" + selected_date  # Attempt to read data for selected date
 
         try:
             print("Processing daily data...")
@@ -161,13 +180,15 @@ def update_data(selected_date):
         except IOError as e:
             message1 = "[" + d.strftime("%b %d, %Y") + "] " + str(e)
 
-    # Totals Data
+    ################################################################################
+    #  Totals data                                                                 #
+    ################################################################################
     if selected_date in date_list_totals:
         message2 = "[" + d.strftime("%b %d, %Y") + "] Already Uploaded 👍"
 
     else:
-        # Attempt to read data for selected date
-        url = url_uk + "&release=" + selected_date
+
+        url = url_uk + "&release=" + selected_date  # Attempt to read data for selected date
 
         try:
             print("Processing totals data...")
