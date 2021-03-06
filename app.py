@@ -76,8 +76,8 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H3("New Cases", className="card-title"),
-                                            html.H2(
+                                            html.H4("New Cases", className="card-title"),
+                                            html.H3(
                                                 id="new_cases",
                                                 className="card-value",
                                                 style={"font-weight": "bold"}
@@ -93,8 +93,8 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H3("New Deaths", className="card-title"),
-                                            html.H2(
+                                            html.H4("New Deaths", className="card-title"),
+                                            html.H3(
                                                 id="new_deaths",
                                                 className="card-value",
                                                 style={"font-weight": "bold"}
@@ -116,8 +116,8 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H3("Total Cases", className="card-title"),
-                                            html.H2(
+                                            html.H4("Total Cases", className="card-title"),
+                                            html.H3(
                                                 id="total_cases",
                                                 className="card-value",
                                                 style={"font-weight": "bold"}
@@ -133,8 +133,8 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H3("Total Deaths", className="card-title"),
-                                            html.H2(
+                                            html.H4("Total Deaths", className="card-title"),
+                                            html.H3(
                                                 id="total_deaths",
                                                 className="card-value",
                                                 style={"font-weight": "bold"}

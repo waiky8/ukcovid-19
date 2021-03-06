@@ -84,38 +84,42 @@ app.layout = html.Div(
                 dbc.Row(
                     [
                         dbc.Col(
-                            dbc.Card(
-                                [
-                                    html.H4("Covid Data", className="card-title"),
-                                    html.H3(
-                                        html.Div(id="message1",
-                                                 className="card-value",
-                                                 style={"font-weight": "bold"}
-                                                 )
-                                    )
-                                ],
-                                style={"color": "white",
-                                       "background": "teal",
-                                       "text-align": "center"
-                                       }
-                            )
+                            dcc.Loading(
+                                dbc.Card(
+                                    [
+                                        html.H5("Covid Data", className="card-title"),
+                                        html.H4(
+                                            html.Div(id="message1",
+                                                     className="card-value",
+                                                     style={"font-weight": "bold"}
+                                                     )
+                                        )
+                                    ],
+                                    style={"color": "white",
+                                           "background": "teal",
+                                           "text-align": "center"
+                                           }
+                                )
+                            ),
                         ),
 
                         dbc.Col(
-                            dbc.Card(
-                                [
-                                    html.H4("Covid Totals", className="card-title"),
-                                    html.H3(
-                                        html.Div(id="message2",
-                                                 className="card-value",
-                                                 style={"font-weight": "bold"}
-                                                 )
-                                    )
-                                ],
-                                style={"color": "white",
-                                       "background": "midnightblue",
-                                       "text-align": "center"
-                                       }
+                            dcc.Loading(
+                                dbc.Card(
+                                    [
+                                        html.H5("Covid Totals", className="card-title"),
+                                        html.H4(
+                                            html.Div(id="message2",
+                                                     className="card-value",
+                                                     style={"font-weight": "bold"}
+                                                     )
+                                        )
+                                    ],
+                                    style={"color": "white",
+                                           "background": "midnightblue",
+                                           "text-align": "center"
+                                           }
+                                )
                             )
                         )
                     ], style={"padding": "0px 30px 0px 30px"}
