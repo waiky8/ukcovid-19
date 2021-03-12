@@ -42,14 +42,14 @@ READ EXCEL FILES
 covid_daily_file = "covid_data.xlsx"
 covid_totals_file = "covid_totals.xlsx"
 
+df_daily = pd.read_excel(covid_daily_file)
+df_totals = pd.read_excel(covid_totals_file)
+
 '''
 ======================
 PARAMETERS & VARIABLES
 ======================
 '''
-
-df_daily = pd.read_excel(covid_daily_file)
-df_totals = pd.read_excel(covid_totals_file)
 
 date_min = "2020-08-12"  # data available from this date
 date_max = df_daily["date"].max()
