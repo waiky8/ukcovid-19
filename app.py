@@ -669,7 +669,7 @@ CALLBACK FOR LOCAL AUTHORITY CHART
     Output("chart3", "figure"),
     Input("locauth_drop", "value")
 )
-def return_la_chart(selected_auth):
+def return_loc_auth_chart(selected_auth):
     print(str(datetime.datetime.now()), "[3] start update_graph2...")
     if selected_auth is None or selected_auth == []:
         locauth_list = ["Sheffield"]

@@ -168,7 +168,7 @@ CALLBACK FOR DATA LOAD
      ],
     Input("date_picker", "date")
 )
-def return_data_load(selected_date):
+def return_new_data(selected_date):
     d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
 
     if selected_date in date_list_daily:
