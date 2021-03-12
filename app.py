@@ -123,7 +123,7 @@ app.layout = html.Div(
                                         }
                                     )
                                 )
-                            ], style={"padding": "0px 30px 0px 30px"}
+                            ], style={"padding": "0px 10px 0px 10px"}
                         ),
 
                         html.Br(),
@@ -165,7 +165,7 @@ app.layout = html.Div(
                                         }
                                     )
                                 )
-                            ], style={"padding": "0px 30px 0px 30px"}
+                            ], style={"padding": "0px 10px 0px 10px"}
                         ),
 
                         html.Br()
@@ -218,7 +218,7 @@ app.layout = html.Div(
                                         )
                                     ]
                                 )
-                            ], style={"padding": "0px 30px 0px 30px"}
+                            ], style={"padding": "0px 10px 0px 10px"}
                         ),
 
                         html.Br(),
@@ -231,7 +231,7 @@ app.layout = html.Div(
                                 placeholder="Local Authority (Mutli-Select)",
                                 style={"font-size": fontsize, "color": "black", "background-color": "white"}
 
-                            ), style={"padding": "0px 30px 0px 30px"}
+                            ), style={"padding": "0px 10px 0px 10px"}
                         ),
 
                         html.Br()
@@ -489,7 +489,7 @@ CALLBACK FOR DATATABLE
         Input("data_type", "value")
     ]
 )
-def update_datatable(selected_date, selected_auth, selected_data):
+def return_datatable(selected_date, selected_auth, selected_data):
     print(str(datetime.datetime.now()), "[1] start update_datatable...")
 
     if selected_data == "daily":
@@ -531,7 +531,7 @@ CALLBACK FOR BAR CHARTS
         Input("data_type", "value")
     ]
 )
-def update_graph(selected_date, selected_auth, selected_data):
+def return_bar_charts(selected_date, selected_auth, selected_data):
     print(str(datetime.datetime.now()), "[2] start update_graph...")
     if selected_data == "daily":
         cases = "newCasesByPublishDate"
@@ -669,7 +669,7 @@ CALLBACK FOR LOCAL AUTHORITY CHART
     Output("chart3", "figure"),
     Input("locauth_drop", "value")
 )
-def update_graph2(selected_auth):
+def return_la_chart(selected_auth):
     print(str(datetime.datetime.now()), "[3] start update_graph2...")
     if selected_auth is None or selected_auth == []:
         locauth_list = ["Sheffield"]
@@ -745,7 +745,7 @@ CALLBACK FOR TOTALS CHART
     Output("chart4", "figure"),
     Input("dummy", "children")
 )
-def totals_timeline(none):
+def return_tot_chart(none):
     date_list = df["date"].unique()
     print(str(datetime.datetime.now()), "[4] start totals_timeline...")
 
@@ -821,7 +821,7 @@ CALLBACK FOR SUMMARY BOXES
     ],
     Input("date_picker", "date")
 )
-def update_summary(selected_date):
+def return_summary(selected_date):
     print(str(datetime.datetime.now()), "[5] start update_summary...")
     df1 = df_tot[df_tot["date"] == selected_date]
 
