@@ -16,10 +16,11 @@ SET-UP DASH
 '''
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
-                meta_tags=[{"name": "viewport",
-                            "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,"
-                            }
-                           ]
+                meta_tags=[
+                    {"name": "viewport",
+                     "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,"
+                     }
+                ]
                 )
 server = app.server
 app.title = "UK Covid-19"
@@ -472,7 +473,6 @@ app.layout = html.Div(
         )
     ]
 )
-
 
 '''
 ======================
