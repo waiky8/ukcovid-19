@@ -7,7 +7,6 @@ import dash_table
 from dash_table.Format import Format, Scheme
 import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
 import datetime
 
 '''
