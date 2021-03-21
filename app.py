@@ -7,6 +7,7 @@ import dash_table
 from dash_table.Format import Format, Scheme
 import plotly.graph_objects as go
 import pandas as pd
+import numpy as np
 import datetime
 
 '''
@@ -67,7 +68,7 @@ app.layout = html.Div(
         html.Div(
             [
                 html.H1("UK Covid-19"),
-                html.H3("(by Local Authority)")
+                html.H3("(by Local Authority - Daily)")
             ],
             style={"text-align": "center", "font-weight": "bold"}
         ),
@@ -75,7 +76,7 @@ app.layout = html.Div(
         html.Br(),
 
         html.P(
-            html.A("Local Area View", href="https://ukcovid-19a.herokuapp.com/", target="_blank"),
+            html.A("Local Area View - Weekly", href="https://ukcovid-19a.herokuapp.com/", target="_blank"),
             style={"padding": "0px 0px 0px 50px"}
         ),
 
@@ -490,7 +491,7 @@ CALLBACK FOR DATATABLE
     ]
 )
 def return_datatable(selected_date, selected_auth, selected_data):
-    print(str(datetime.datetime.now()), "[1] start update_datatable...")
+    # print(str(datetime.datetime.now()), "[1] start update_datatable...")
 
     if selected_data == "daily":
         cases = "newCasesByPublishDate"
@@ -508,7 +509,7 @@ def return_datatable(selected_date, selected_auth, selected_data):
     df1["Row"] = df1.reset_index().index
     df1["Row"] += 1
 
-    print(str(datetime.datetime.now()), "[1] finish update_datatable...")
+    # print(str(datetime.datetime.now()), "[1] finish update_datatable...")
 
     return df1.to_dict("records")
 
@@ -532,7 +533,7 @@ CALLBACK FOR BAR CHARTS
     ]
 )
 def return_bar_charts(selected_date, selected_auth, selected_data):
-    print(str(datetime.datetime.now()), "[2] start update_graph...")
+    # print(str(datetime.datetime.now()), "[2] start update_graph...")
     if selected_data == "daily":
         cases = "newCasesByPublishDate"
         deaths = "newDeaths28DaysByPublishDate"
@@ -654,7 +655,7 @@ def return_bar_charts(selected_date, selected_auth, selected_data):
         hoverinfo="skip"
     )
 
-    print(str(datetime.datetime.now()), "[2] finish update_graph...")
+    # print(str(datetime.datetime.now()), "[2] finish update_graph...")
     return fig1, fig2
 
 
@@ -670,7 +671,7 @@ CALLBACK FOR LOCAL AUTHORITY CHART
     Input("locauth_drop", "value")
 )
 def return_loc_auth_chart(selected_auth):
-    print(str(datetime.datetime.now()), "[3] start update_graph2...")
+    # print(str(datetime.datetime.now()), "[3] start update_graph2...")
     if selected_auth is None or selected_auth == []:
         locauth_list = ["Sheffield"]
         df1 = df[df["areaName"].isin(locauth_list)]
@@ -724,13 +725,15 @@ def return_loc_auth_chart(selected_auth):
                 x=dfx["date"],
                 y=dfx["newCasesByPublishDate"],
                 mode="lines",
-                name=la,
+                name="",
+                text=dfx["areaName"],
                 showlegend=False,
-                hovertemplate=None
+                customdata=dfx["newCasesByPublishDate"],
+                hovertemplate="<br><b>%{text}</b>: %{customdata}"
             )
         )
 
-    print(str(datetime.datetime.now()), "[3] finish update_graph2...")
+    # print(str(datetime.datetime.now()), "[3] finish update_graph2...")
     return fig3
 
 
@@ -747,7 +750,7 @@ CALLBACK FOR TOTALS CHART
 )
 def return_tot_chart(none):
     date_list = df["date"].unique()
-    print(str(datetime.datetime.now()), "[4] start totals_timeline...")
+    # print(str(datetime.datetime.now()), "[4] start totals_timeline...")
 
     fig5 = go.Figure()
     fig5.update_layout(
@@ -801,7 +804,7 @@ def return_tot_chart(none):
         )
     )
 
-    print(str(datetime.datetime.now()), "[4] finish_totals_timeline...")
+    # print(str(datetime.datetime.now()), "[4] finish_totals_timeline...")
     return fig5
 
 
@@ -822,7 +825,7 @@ CALLBACK FOR SUMMARY BOXES
     Input("date_picker", "date")
 )
 def return_summary(selected_date):
-    print(str(datetime.datetime.now()), "[5] start update_summary...")
+    # print(str(datetime.datetime.now()), "[5] start update_summary...")
     df1 = df_tot[df_tot["date"] == selected_date]
 
     new_cases = format(int(df1["newCasesByPublishDate"]), ",d")
@@ -830,7 +833,7 @@ def return_summary(selected_date):
     total_cases = format(int(df1["cumCasesByPublishDate"]), ",d")
     total_deaths = format(int(df1["cumDeaths28DaysByPublishDate"]), ",d")
 
-    print(str(datetime.datetime.now()), "[5] finish update_summary...")
+    # print(str(datetime.datetime.now()), "[5] finish update_summary...")
     return new_cases, new_deaths, total_cases, total_deaths
 
 
