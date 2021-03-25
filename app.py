@@ -85,6 +85,72 @@ app.layout = html.Div(
             [
                 html.Div(
                     [
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    [
+                                        html.P("Select Date:"),
+
+                                        dcc.DatePickerSingle(
+                                            id="date_picker",
+                                            clearable=True,
+                                            with_portal=True,
+                                            date=date_max,
+                                            display_format="MMM D, YYYY",
+                                            day_size=50,
+                                            initial_visible_month=date_max,
+                                            min_date_allowed=date_min,
+                                            max_date_allowed=date_max
+                                        ),
+                                        html.Br()
+                                    ]
+                                ),
+
+                                dbc.Col(
+                                    [
+                                        html.P("Data Type:"),
+
+                                        dcc.RadioItems(
+                                            id="data_type",
+                                            options=[
+                                                {"label": "Daily", "value": "daily"},
+                                                {"label": "Cumulative", "value": "cumulative"}
+                                            ],
+                                            value="daily",
+                                            labelStyle={"display": "block", "cursor": "pointer",
+                                                        "margin-left": "20px"},
+                                            inputStyle={"margin-right": "10px"}
+                                        )
+                                    ]
+                                )
+                            ], style={"padding": "0px 10px 0px 10px"}
+                        ),
+
+                        html.Br(),
+
+                        html.Div(
+                            dcc.Dropdown(
+                                id="locauth_drop",
+                                options=[{"label": i, "value": i} for i in sorted(df["areaName"].unique())],
+                                multi=True,
+                                placeholder="Local Authority (Mutli-Select)",
+                                style={"font-size": fontsize, "color": "black", "background-color": "white"}
+
+                            ), style={"padding": "0px 10px 0px 10px"}
+                        ),
+
+                        html.Br()
+                    ], style={"background": "ghostwhite", "border-style": "groove"}
+                )
+            ], style={"padding": "0px 30px 0px 30px"}
+        ),
+
+        html.Br(), html.Br(),
+
+        html.Div(
+            [
+                html.Div(
+                    [
                         html.Br(),
 
                         dbc.Row(
@@ -177,95 +243,29 @@ app.layout = html.Div(
 
         html.Br(), html.Br(),
 
-        html.Div(
-            [
-                html.Div(
-                    [
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [
-                                        html.P("Select Date:"),
-
-                                        dcc.DatePickerSingle(
-                                            id="date_picker",
-                                            clearable=True,
-                                            with_portal=True,
-                                            date=date_max,
-                                            display_format="MMM D, YYYY",
-                                            day_size=50,
-                                            initial_visible_month=date_max,
-                                            min_date_allowed=date_min,
-                                            max_date_allowed=date_max
-                                        ),
-                                        html.Br()
-                                    ]
-                                ),
-
-                                dbc.Col(
-                                    [
-                                        html.P("Data Type:"),
-
-                                        dcc.RadioItems(
-                                            id="data_type",
-                                            options=[
-                                                {"label": "Daily", "value": "daily"},
-                                                {"label": "Cumulative", "value": "cumulative"}
-                                            ],
-                                            value="daily",
-                                            labelStyle={"display": "block", "cursor": "pointer",
-                                                        "margin-left": "20px"},
-                                            inputStyle={"margin-right": "10px"}
-                                        )
-                                    ]
-                                )
-                            ], style={"padding": "0px 10px 0px 10px"}
-                        ),
-
-                        html.Br(),
-
-                        html.Div(
-                            dcc.Dropdown(
-                                id="locauth_drop",
-                                options=[{"label": i, "value": i} for i in sorted(df["areaName"].unique())],
-                                multi=True,
-                                placeholder="Local Authority (Mutli-Select)",
-                                style={"font-size": fontsize, "color": "black", "background-color": "white"}
-
-                            ), style={"padding": "0px 10px 0px 10px"}
-                        ),
-
-                        html.Br()
-                    ], style={"background": "ghostwhite", "border-style": "groove"}
-                )
-            ], style={"padding": "0px 30px 0px 30px"}
-        ),
-
-        html.Br(), html.Br(),
-
-        html.Div(
-            dcc.Loading(
-                dcc.Graph(
-                    id="chart1",
-                    figure={},
-                    config={"displayModeBar": False}  # hide plotly controls
-                )
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
-
-        html.Br(), html.Br(),
-
-        html.Div(
-            dcc.Loading(
-                dcc.Graph(
-                    id="chart2",
-                    figure={},
-                    config={"displayModeBar": False}  # hide plotly controls
-                )
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
-
-        html.Br(), html.Br(),
+        # html.Div(
+        #     dcc.Loading(
+        #         dcc.Graph(
+        #             id="chart1",
+        #             figure={},
+        #             config={"displayModeBar": False}  # hide plotly controls
+        #         )
+        #     ), style={"padding": "0px 20px 0px 20px"}
+        # ),
+        #
+        # html.Br(), html.Br(),
+        #
+        # html.Div(
+        #     dcc.Loading(
+        #         dcc.Graph(
+        #             id="chart2",
+        #             figure={},
+        #             config={"displayModeBar": False}  # hide plotly controls
+        #         )
+        #     ), style={"padding": "0px 20px 0px 20px"}
+        # ),
+        #
+        # html.Br(), html.Br(),
 
         html.Div(
             [
@@ -368,6 +368,7 @@ app.layout = html.Div(
                                 "if": {
                                     "column_id": "areaName"
                                 },
+                                "textAlign": "left",
                                 "width": "120px"
                             },
                             {
@@ -519,143 +520,142 @@ CALLBACK FOR BAR CHARTS
 =======================
 '''
 
-
-@app.callback(
-    [
-        Output("chart1", "figure"),
-        Output("chart2", "figure")
-    ],
-    [
-        Input("date_picker", "date"),
-        Input("locauth_drop", "value"),
-        Input("data_type", "value")
-    ]
-)
-def return_bar_charts(selected_date, selected_auth, selected_data):
-    # print(str(datetime.datetime.now()), "[2] start update_graph...")
-    if selected_data == "daily":
-        cases = "newCasesByPublishDate"
-        deaths = "newDeaths28DaysByPublishDate"
-        cases_title = "New Cases"
-        deaths_title = "New Deaths"
-    else:
-        cases = "cumCasesByPublishDate"
-        deaths = "cumDeaths28DaysByPublishDate"
-        cases_title = "Total Cases"
-        deaths_title = "Total Deaths"
-
-    df1 = df[df["date"].isin([selected_date])]
-
-    if selected_auth is None or selected_auth == []:
-        pass
-    else:
-        df1 = df1[df1["areaName"].isin(selected_auth)]
-
-    d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
-
-    data_fig1 = df1.sort_values(by=cases, ascending=False)[:topn]
-
-    fig1 = go.Figure(
-        go.Bar(
-            orientation="h",
-            x=data_fig1[cases],
-            y=data_fig1["areaName"],
-            texttemplate="%{y} - %{x:,}",
-            textposition="inside",
-            insidetextanchor="end"
-        )
-    )
-
-    fig1.update_layout(
-        title="<b>" + cases_title + ": " + d.strftime("%b %d, %Y") + "</b>",
-        title_font_color=textcol,
-        font_color="white",
-        font_size=fontsize,
-        showlegend=False,
-        xaxis={
-            "categoryorder": "total descending",
-            "title": "",
-            "tickangle": 0,
-            "visible": False,
-            "showgrid": False,
-            "zeroline": False,
-            "gridcolor": grid_col,
-            "zerolinecolor": grid_col,
-            "fixedrange": True
-        },
-        yaxis={
-            "title": "",
-            "autorange": "reversed",
-            "visible": False,
-            "showgrid": False,
-            "zeroline": False,
-            "gridcolor": grid_col,
-            "zerolinecolor": grid_col,
-            "fixedrange": True
-        },
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        plot_bgcolor=bgcol,
-        paper_bgcolor=bgcol
-    )
-
-    fig1.update_traces(
-        marker_color=col_1,
-        hoverinfo="skip"
-    )
-
-    data_fig2 = df1.sort_values(by=[deaths], ascending=False)[:topn]
-    fig2 = go.Figure(
-        go.Bar(
-            orientation="h",
-            x=data_fig2[deaths],
-            y=data_fig2["areaName"],
-            texttemplate="%{y} - %{x:,}",
-            textposition="inside",
-            insidetextanchor="end"
-        )
-    )
-
-    fig2.update_layout(
-        title="<b>" + deaths_title + ": " + d.strftime("%b %d, %Y") + "</b>",
-        title_font_color=textcol,
-        font_color="white",
-        font_size=fontsize,
-        showlegend=False,
-        xaxis={
-            "categoryorder": "total descending",
-            "title": "",
-            "tickangle": 0,
-            "visible": False,
-            "showgrid": True,
-            "zeroline": False,
-            "gridcolor": grid_col,
-            "zerolinecolor": grid_col,
-            "fixedrange": True
-        },
-        yaxis={
-            "title": "",
-            "autorange": "reversed",
-            "visible": False,
-            "showgrid": True,
-            "zeroline": False,
-            "gridcolor": grid_col,
-            "zerolinecolor": grid_col,
-            "fixedrange": True
-        },
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        plot_bgcolor=bgcol,
-        paper_bgcolor=bgcol
-    )
-
-    fig2.update_traces(
-        marker_color=col_2,
-        hoverinfo="skip"
-    )
-
-    # print(str(datetime.datetime.now()), "[2] finish update_graph...")
-    return fig1, fig2
+# @app.callback(
+#     [
+#         Output("chart1", "figure"),
+#         Output("chart2", "figure")
+#     ],
+#     [
+#         Input("date_picker", "date"),
+#         Input("locauth_drop", "value"),
+#         Input("data_type", "value")
+#     ]
+# )
+# def return_bar_charts(selected_date, selected_auth, selected_data):
+#     # print(str(datetime.datetime.now()), "[2] start update_graph...")
+#     if selected_data == "daily":
+#         cases = "newCasesByPublishDate"
+#         deaths = "newDeaths28DaysByPublishDate"
+#         cases_title = "New Cases"
+#         deaths_title = "New Deaths"
+#     else:
+#         cases = "cumCasesByPublishDate"
+#         deaths = "cumDeaths28DaysByPublishDate"
+#         cases_title = "Total Cases"
+#         deaths_title = "Total Deaths"
+#
+#     df1 = df[df["date"].isin([selected_date])]
+#
+#     if selected_auth is None or selected_auth == []:
+#         pass
+#     else:
+#         df1 = df1[df1["areaName"].isin(selected_auth)]
+#
+#     d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
+#
+#     data_fig1 = df1.sort_values(by=cases, ascending=False)[:topn]
+#
+#     fig1 = go.Figure(
+#         go.Bar(
+#             orientation="h",
+#             x=data_fig1[cases],
+#             y=data_fig1["areaName"],
+#             texttemplate="%{y} - %{x:,}",
+#             textposition="inside",
+#             insidetextanchor="end"
+#         )
+#     )
+#
+#     fig1.update_layout(
+#         title="<b>" + cases_title + ": " + d.strftime("%b %d, %Y") + "</b>",
+#         title_font_color=textcol,
+#         font_color="white",
+#         font_size=fontsize,
+#         showlegend=False,
+#         xaxis={
+#             "categoryorder": "total descending",
+#             "title": "",
+#             "tickangle": 0,
+#             "visible": False,
+#             "showgrid": False,
+#             "zeroline": False,
+#             "gridcolor": grid_col,
+#             "zerolinecolor": grid_col,
+#             "fixedrange": True
+#         },
+#         yaxis={
+#             "title": "",
+#             "autorange": "reversed",
+#             "visible": False,
+#             "showgrid": False,
+#             "zeroline": False,
+#             "gridcolor": grid_col,
+#             "zerolinecolor": grid_col,
+#             "fixedrange": True
+#         },
+#         height=chart_h,
+#         margin=dict(l=0, r=0, t=50, b=0),
+#         plot_bgcolor=bgcol,
+#         paper_bgcolor=bgcol
+#     )
+#
+#     fig1.update_traces(
+#         marker_color=col_1,
+#         hoverinfo="skip"
+#     )
+#
+#     data_fig2 = df1.sort_values(by=[deaths], ascending=False)[:topn]
+#     fig2 = go.Figure(
+#         go.Bar(
+#             orientation="h",
+#             x=data_fig2[deaths],
+#             y=data_fig2["areaName"],
+#             texttemplate="%{y} - %{x:,}",
+#             textposition="inside",
+#             insidetextanchor="end"
+#         )
+#     )
+#
+#     fig2.update_layout(
+#         title="<b>" + deaths_title + ": " + d.strftime("%b %d, %Y") + "</b>",
+#         title_font_color=textcol,
+#         font_color="white",
+#         font_size=fontsize,
+#         showlegend=False,
+#         xaxis={
+#             "categoryorder": "total descending",
+#             "title": "",
+#             "tickangle": 0,
+#             "visible": False,
+#             "showgrid": True,
+#             "zeroline": False,
+#             "gridcolor": grid_col,
+#             "zerolinecolor": grid_col,
+#             "fixedrange": True
+#         },
+#         yaxis={
+#             "title": "",
+#             "autorange": "reversed",
+#             "visible": False,
+#             "showgrid": True,
+#             "zeroline": False,
+#             "gridcolor": grid_col,
+#             "zerolinecolor": grid_col,
+#             "fixedrange": True
+#         },
+#         height=chart_h,
+#         margin=dict(l=0, r=0, t=50, b=0),
+#         plot_bgcolor=bgcol,
+#         paper_bgcolor=bgcol
+#     )
+#
+#     fig2.update_traces(
+#         marker_color=col_2,
+#         hoverinfo="skip"
+#     )
+#
+#     # print(str(datetime.datetime.now()), "[2] finish update_graph...")
+#     return fig1, fig2
 
 
 '''
