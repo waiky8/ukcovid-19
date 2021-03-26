@@ -3,6 +3,8 @@ There are plenty of (UK) covid dashboards available but not many that show compa
 
 **Dash** comes with many wonderful features (graphs, datatable, date picker, checkboxes, radio buttons etc.) that have been incorporated into the application.<br><br>
 
+**Mapbox** is used to show each local authority that dispalys additional information when you hover over or click on the markers.<br><br>
+
 Data is refreshed and uploaded daily.<br><br>
 The application is uploaded to **Heroku**.<br><br>
 Check it out at https://ukcovid-19.herokuapp.com/<br><br>
@@ -10,6 +12,7 @@ Query cases for your neighbourhood (postcode) at https://ukcovid-19a.herokuapp.c
 
 # Features:
 - Summary of cases/deaths
+- Map with markers showing the covid cases and deaths for each local authority
 - Datatable that display cases & deaths (daily and cumulative)
 - Top 5 charts showing cases/deaths for daily or cumulative figures (removed, datatable already shows this)
 - Graphical timeline of cases for selected local authorities
