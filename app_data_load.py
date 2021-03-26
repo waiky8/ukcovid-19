@@ -5,6 +5,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import pandas as pd
 from openpyxl import load_workbook
+import bs4 as bs
 import urllib.request
 import datetime
 
@@ -56,6 +57,16 @@ date_max = df_daily["date"].max()
 
 date_list_daily = [str(d) for d in df_daily["date"].unique()]
 date_list_totals = [str(d) for d in df_totals["date"].unique()]
+
+# following are missing coordinates from doogal website
+coords = [
+    ("Aylesbury Vale", 51.8996278, -1.1193516),
+    ("Chiltern", 51.6788424, -0.7737162),
+    ("South Bucks", 51.5600494, -0.7301907),
+    ("Wycombe", 51.6635175, -0.9501978)
+]
+
+df_coords = pd.DataFrame(coords, columns=["LA", "Lat", "Long"])
 
 '''
 ===================
@@ -171,6 +182,12 @@ CALLBACK FOR DATA LOAD
 def return_new_data(selected_date):
     d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
 
+    '''
+    -----------
+    Daily Data
+    -----------
+    '''
+
     if selected_date in date_list_daily:
         message1 = "Already Uploaded 👍"
 
@@ -184,6 +201,54 @@ def return_new_data(selected_date):
 
             print(str(datetime.datetime.now()), "step 2 of 3: extract data for ", d.strftime("%b %d, %Y"))
             df_load = df_load[df_load["date"] == selected_date]
+
+            '''
+            --------------------
+            LATITUDE & LONGITUDE
+            --------------------
+            '''
+
+            latitude = []
+            longitude = []
+            i = 0
+
+            for r in df_load.itertuples():
+                i += 1
+                loc_auth = r.areaName
+
+                if loc_auth == "Hackney and City of London":
+                    loc_auth = "Hackney"
+
+                if loc_auth == "Cornwall and Isles of Scilly":
+                    loc_auth = "Cornwall"
+
+                if loc_auth == "Comhairle nan Eilean Siar":
+                    loc_auth = "Na h-Eileanan Siar"
+
+                lat, long = get_coord(loc_auth)
+
+                if lat == "" or long == "":
+                    for c in df_coords.itertuples():
+                        if c.LA == loc_auth:
+                            lat = c.Lat
+                            long = c.Long
+
+                if lat == "" or long == "":
+                    print("***  Not Found ***")
+
+                latitude.append(lat)
+                longitude.append(long)
+
+                print(i, loc_auth, lat, long)
+
+            df_load["Latitude"] = latitude
+            df_load["Longitude"] = longitude
+
+            '''
+            --------------
+            WRITE TO EXCEL
+            --------------
+            '''
 
             print(str(datetime.datetime.now()), "step 3 of 3: write to covid file...")
             writer = pd.ExcelWriter(covid_daily_file)
@@ -206,6 +271,12 @@ def return_new_data(selected_date):
         except urllib.request.HTTPError:
             message1 = "Not Available ❌"
 
+    '''
+    -----------
+    Totals Data
+    -----------
+    '''
+
     if selected_date in date_list_totals:
         message2 = "Already Uploaded 👍"
 
@@ -216,6 +287,7 @@ def return_new_data(selected_date):
             print("Processing totals data...")
             print(str(datetime.datetime.now()), "step 1 of 3: read ", url)
             df_load = pd.read_csv(url)
+            print(df_load)
 
             print(str(datetime.datetime.now()), " step 2 of 3: extract data for ", d.strftime("%b %d, %Y"))
             df_load = df_load[df_load["date"] == selected_date]
@@ -245,6 +317,47 @@ def return_new_data(selected_date):
     print(str(datetime.datetime.now()), message2)
 
     return message1, message2
+
+
+'''
+========================
+GET LATITUDE & LONGITUDE
+========================
+'''
+
+
+def get_coord(loc_auth):
+    lat = long = ""
+
+    if pd.isna(loc_auth):
+        return lat, long
+
+    url = "https://www.doogal.co.uk/AdministrativeAreas.php"
+
+    try:
+        source = urllib.request.urlopen(url)
+        soup = bs.BeautifulSoup(source, 'lxml')
+        tables = soup.find_all("table")
+
+        for tb in tables:
+            table_rows = tb.find_all("tr")
+
+            for tr in table_rows:
+                thd = tr.find_all(["th", "td"])
+                row = [i.text for i in thd]
+
+                if not row:
+                    pass
+                else:
+                    if row[0] == loc_auth:
+                        lat = row[2]
+                        long = row[3]
+                        break
+
+    except urllib.request.HTTPError as err:
+        print("HTTP Error: (local auth ", loc_auth, ")", err.code)
+
+    return lat, long
 
 
 if __name__ == "__main__":

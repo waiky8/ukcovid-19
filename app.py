@@ -7,6 +7,7 @@ import dash_table
 from dash_table.Format import Format, Scheme
 import plotly.graph_objects as go
 import pandas as pd
+import numpy as np
 import datetime
 
 '''
@@ -24,6 +25,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
                 )
 server = app.server
 app.title = "UK Covid-19"
+
+mapbox_access_token = "pk.eyJ1Ijoid2Fpa3kiLCJhIjoiY2trMWhidDhtMHJpZDJ2cGNldXZraXNhMiJ9.nR_QQ61ZVCQ2NTem0VBEXg"
 
 '''
 ================
@@ -239,6 +242,18 @@ app.layout = html.Div(
                     ], style={"background": "ghostwhite", "border-style": "groove"}
                 )
             ], style={"padding": "0px 30px 0px 30px"}
+        ),
+
+        html.Br(), html.Br(),
+
+        html.Div(
+            dcc.Loading(
+                dcc.Graph(
+                    id="covid_map",
+                    figure={},
+                    config={"displayModeBar": False}
+                )
+            ), style={"padding": "0px 20px 0px 20px"}
         ),
 
         html.Br(), html.Br(),
@@ -483,7 +498,10 @@ CALLBACK FOR DATATABLE
 
 
 @app.callback(
-    Output("datatable", "data"),
+    [
+        Output("datatable", "data"),
+        Output("covid_map", "figure")
+    ],
     [
         Input("date_picker", "date"),
         Input("locauth_drop", "value"),
@@ -492,6 +510,12 @@ CALLBACK FOR DATATABLE
 )
 def return_datatable(selected_date, selected_auth, selected_data):
     # print(str(datetime.datetime.now()), "[1] start update_datatable...")
+
+    '''
+    ---------
+    DATATABLE
+    ---------
+    '''
 
     if selected_data == "daily":
         cases = "newCasesByPublishDate"
@@ -509,9 +533,67 @@ def return_datatable(selected_date, selected_auth, selected_data):
     df1["Row"] = df1.reset_index().index
     df1["Row"] += 1
 
+    '''
+    ----------------
+    MAP WITH MARKERS
+    ----------------
+    '''
+
+    lat_mean = pd.to_numeric(df1["Latitude"]).mean()
+    lon_mean = pd.to_numeric(df1["Longitude"]).mean()
+
+    fig = go.Figure(
+        go.Scattermapbox(
+            lat=df1["Latitude"],
+            lon=df1["Longitude"],
+            mode="text+markers",
+            marker={"size": 8},   # "color": df1["COLOUR1"],
+            name="",
+            text=df1["areaName"],
+            textposition='top center',
+            customdata=np.stack(
+                (
+                    df1["date"],
+                    df1["newCasesByPublishDate"],
+                    df1["newDeaths28DaysByPublishDate"],
+                    df1["cumCasesByPublishDate"],
+                    df1["cumDeaths28DaysByPublishDate"]
+                ),
+                axis=-1
+            ),
+            hovertemplate="<br><b>Date</b>: %{customdata[0]}" + \
+                          "<br><b>Local Authority</b>: %{text}" + \
+                          "<br><b>New Cases</b>: %{customdata[1]:,}" + \
+                          "<br><b>New Deaths</b>: %{customdata[2]:,}" + \
+                          "<br><b>Cumulative Cases</b>: %{customdata[3]:,}" + \
+                          "<br><b>Cumulative Deaths</b>: %{customdata[4]:,}"
+        )
+    )
+
+    fig.update_layout(
+        hovermode='closest',
+        mapbox=dict(
+            accesstoken=mapbox_access_token,
+            bearing=0,
+            center=dict(
+                lat=lat_mean,
+                lon=lon_mean
+            ),
+            pitch=0,
+            zoom=5,
+            style="light"  # satellite, outdoors, streets, dark
+        ),
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=12,
+            font_family="Rockwell"
+        ),
+        margin=dict(t=0, b=0, l=0, r=0)
+    )
+
     # print(str(datetime.datetime.now()), "[1] finish update_datatable...")
 
-    return df1.to_dict("records")
+    return df1.to_dict("records"), fig
 
 
 '''
