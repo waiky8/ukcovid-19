@@ -287,7 +287,6 @@ def return_new_data(selected_date):
             print("Processing totals data...")
             print(str(datetime.datetime.now()), "step 1 of 3: read ", url)
             df_load = pd.read_csv(url)
-            print(df_load)
 
             print(str(datetime.datetime.now()), " step 2 of 3: extract data for ", d.strftime("%b %d, %Y"))
             df_load = df_load[df_load["date"] == selected_date]
