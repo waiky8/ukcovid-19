@@ -234,7 +234,7 @@ def return_new_data(selected_date):
                             long = c.Long
 
                 if lat == "" or long == "":
-                    print("***  Not Found ***")
+                    print("*** Not Found ***")
 
                 latitude.append(lat)
                 longitude.append(long)
