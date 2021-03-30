@@ -13,8 +13,7 @@ Query cases for your neighbourhood (postcode) at https://ukcovid-19a.herokuapp.c
 # Features:
 - Summary of cases/deaths
 - Map with markers showing the covid cases and deaths for each local authority
-- Datatable that display cases & deaths (daily and cumulative)
-- ~~Top 5 charts showing cases/deaths for daily or cumulative figures~~ (removed, datatable already shows this)
+- Bar charts showing cases/deaths for daily or cumulative figures
 - Graphical timeline of cases for selected local authorities
 - Graphical timeline of daily cases<br><br>
 
