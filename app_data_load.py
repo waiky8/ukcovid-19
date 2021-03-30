@@ -159,7 +159,7 @@ app.layout = html.Div(
                                 html.Br()
                             ]
                         )
-                    ], style={"background": "ghostwhite", "border-style": "groove"}
+                    ], style={"background": "whitesmoke", "border-style": "groove"}
                 )
             ], style={"padding": "0px 30px 0px 30px"}
         )
