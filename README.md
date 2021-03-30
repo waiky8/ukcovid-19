@@ -29,8 +29,6 @@ Query cases for your neighbourhood (postcode) at https://ukcovid-19a.herokuapp.c
  - **covid_totals.xlsx** - covid totals data<br><br>
 
 # Sample screenshots:
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_1.jpg)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_2.jpg)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_3.jpg)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_4.jpg)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot_5.jpg)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot1.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot2.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot3.png)
