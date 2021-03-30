@@ -3,7 +3,7 @@ There are plenty of (UK) covid dashboards available but not many that show compa
 
 **Dash** comes with many wonderful features (graphs, datatable, date picker, checkboxes, radio buttons etc.) that have been incorporated into the application.<br><br>
 
-**Mapbox** is used to show each local authority that dispalys additional information when you hover over or click on the markers.<br><br>
+**Mapbox** is used to show cases/deaths for each local authority with markers and hover text.<br><br>
 
 Data is refreshed and uploaded daily.<br><br>
 The application is uploaded to **Heroku**.<br><br>
