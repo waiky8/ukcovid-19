@@ -7,7 +7,9 @@ import plotly.graph_objects as go
 import dash_daq as daq
 import pandas as pd
 import numpy as np
-import datetime
+from datetime import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from configparser import ConfigParser
 
 '''
@@ -48,13 +50,16 @@ PARAMETERS & VARIABLES
 ======================
 '''
 
-date_min = "2020-08-12"  # data available from this date
+# date_min = "2020-08-12"  # data available from this date
 date_max = df["date"].max()
 
+date_min = datetime.strptime(date_max, "%Y-%m-%d") + relativedelta(days=-14)  # 2 week's data
+df = df[df["date"] >= str(date_min)]
+df_tot = df_tot[df_tot["date"] >= str(date_min)]
+
 marker_calc_size = 50  # used to (dynamically) calculate marker size on map
-topn = 5
+topn = 10
 chart_h = 320
-datatable_rows = 10
 fontsize = 15
 
 textcol = "dimgrey"
@@ -96,7 +101,7 @@ app.layout = html.Div(
                     [
                         html.Div(
                             [
-                                html.P("Select Date:"),
+                                html.P("Select Date (last 2 weeks):"),
 
                                 dcc.DatePickerSingle(
                                     id="date_picker",
@@ -311,34 +316,34 @@ app.layout = html.Div(
             ], style={"padding": "0px 20px 0px 20px"}
         ),
 
-        html.Br(), html.Br(),
+        # html.Br(), html.Br(),
 
-        html.Div(
-            html.P("*Defaults to 'Sheffield' if no local authority selected"),
-            style={"font-style": "italic", "padding": "0px 20px 0px 20px"}
-        ),
+        # html.Div(
+        #     html.P("*Defaults to 'Sheffield' if no local authority selected"),
+        #     style={"font-style": "italic", "padding": "0px 20px 0px 20px"}
+        # ),
 
-        html.Div(
-            dcc.Loading(
-                dcc.Graph(
-                    id="chart3",
-                    figure={},
-                    config={"displayModeBar": False}
-                )
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
+        # html.Div(
+        #     dcc.Loading(
+        #         dcc.Graph(
+        #             id="chart3",
+        #             figure={},
+        #             config={"displayModeBar": False}
+        #         )
+        #     ), style={"padding": "0px 20px 0px 20px"}
+        # ),
 
-        html.Br(), html.Br(),
+        # html.Br(), html.Br(),
 
-        html.Div(
-            dcc.Loading(
-                dcc.Graph(
-                    id="chart4",
-                    figure={},
-                    config={"displayModeBar": False}
-                )
-            ), style={"padding": "0px 20px 0px 20px"}
-        ),
+        # html.Div(
+        #     dcc.Loading(
+        #         dcc.Graph(
+        #             id="chart4",
+        #             figure={},
+        #             config={"displayModeBar": False}
+        #         )
+        #     ), style={"padding": "0px 20px 0px 20px"}
+        # ),
 
         html.Br(), html.Br(), html.Br(),
 
@@ -386,7 +391,7 @@ CALLBACK FOR MAP
     ]
 )
 def return_datatable(selected_date, selected_auth, selected_data, selected_cases):
-    # print(str(datetime.datetime.now()), "[1] start update_map...")
+    print(str(datetime.now()), "[1] start update_map...")
 
     df1 = df[df["date"].isin([selected_date])]
 
@@ -471,7 +476,7 @@ def return_datatable(selected_date, selected_auth, selected_data, selected_cases
         margin=dict(t=0, b=0, l=0, r=0)
     )
 
-    # print(str(datetime.datetime.now()), "[1] finish update_map...")
+    print(str(datetime.now()), "[1] finish update_map...")
 
     return fig  # df1.to_dict("records")
 
@@ -493,7 +498,7 @@ CALLBACK FOR BAR CHARTS
     ]
 )
 def return_bar_charts(selected_date, selected_auth, selected_data, selected_cases):
-    # print(str(datetime.datetime.now()), "[2] start update_graph...")
+    print(str(datetime.now()), "[2] start update_bar_chart...")
     if selected_data:
         if selected_cases:
             display = "newCasesByPublishDate"
@@ -520,7 +525,7 @@ def return_bar_charts(selected_date, selected_auth, selected_data, selected_case
     else:
         df1 = df1[df1["areaName"].isin(selected_auth)]
 
-    d = datetime.datetime.strptime(selected_date, "%Y-%m-%d")
+    d = datetime.strptime(selected_date, "%Y-%m-%d")
 
     data_fig = df1.sort_values(by=display, ascending=False)[:topn]
 
@@ -567,7 +572,7 @@ def return_bar_charts(selected_date, selected_auth, selected_data, selected_case
         hoverinfo="skip"
     )
 
-    # print(str(datetime.datetime.now()), "[2] finish update_graph...")
+    print(str(datetime.now()), "[2] finish update_bar_chart...")
     return fig
 
 
@@ -577,67 +582,66 @@ CALLBACK FOR LOCAL AUTHORITY CHART
 ==================================
 '''
 
-
-@app.callback(
-    Output("chart3", "figure"),
-    Input("locauth_drop", "value")
-)
-def return_loc_auth_chart(selected_auth):
-    # print(str(datetime.datetime.now()), "[3] start update_graph2...")
-    if selected_auth is None or selected_auth == []:
-        locauth_list = ["Sheffield"]
-        df1 = df[df["areaName"].isin(locauth_list)]
-    else:
-        df1 = df[df["areaName"].isin(selected_auth)]
-        locauth_list = df1["areaName"].unique()
-
-    fig3 = go.Figure()
-    fig3.update_layout(
-        title="<b>Local Authority Cases</b>",
-        title_font_color=textcol,
-        font_color=textcol,
-        font_size=fontsize,
-        plot_bgcolor=bgcol_2,
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        xaxis={
-            "title": "",
-            "tickangle": 0,
-            "showgrid": False,
-            "fixedrange": True
-        },
-        yaxis={
-            "title": "",
-            "showgrid": False,
-            "zeroline": False,
-            "fixedrange": True
-        },
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01
-        ),
-        hovermode="x"
-    )
-
-    for la in locauth_list:
-        dfx = df1[df1["areaName"] == la]
-        fig3.add_trace(
-            go.Scatter(
-                x=dfx["date"],
-                y=dfx["newCasesByPublishDate"],
-                mode="lines",
-                name="",
-                text=dfx["areaName"],
-                showlegend=False,
-                customdata=dfx["newCasesByPublishDate"],
-                hovertemplate="<br><b>%{text}</b>: %{customdata}"
-            )
-        )
-
-    # print(str(datetime.datetime.now()), "[3] finish update_graph2...")
-    return fig3
+# @app.callback(
+#     Output("chart3", "figure"),
+#     Input("locauth_drop", "value")
+# )
+# def return_loc_auth_chart(selected_auth):
+#     print(str(datetime.now()), "[3] start update_local_authority_chart...")
+#     if selected_auth is None or selected_auth == []:
+#         locauth_list = ["Sheffield"]
+#         df1 = df[df["areaName"].isin(locauth_list)]
+#     else:
+#         df1 = df[df["areaName"].isin(selected_auth)]
+#         locauth_list = df1["areaName"].unique()
+#
+#     fig3 = go.Figure()
+#     fig3.update_layout(
+#         title="<b>Local Authority Cases</b>",
+#         title_font_color=textcol,
+#         font_color=textcol,
+#         font_size=fontsize,
+#         plot_bgcolor=bgcol_2,
+#         height=chart_h,
+#         margin=dict(l=0, r=0, t=50, b=0),
+#         xaxis={
+#             "title": "",
+#             "tickangle": 0,
+#             "showgrid": False,
+#             "fixedrange": True
+#         },
+#         yaxis={
+#             "title": "",
+#             "showgrid": False,
+#             "zeroline": False,
+#             "fixedrange": True
+#         },
+#         legend=dict(
+#             yanchor="top",
+#             y=0.99,
+#             xanchor="left",
+#             x=0.01
+#         ),
+#         hovermode="x"
+#     )
+#
+#     for la in locauth_list:
+#         dfx = df1[df1["areaName"] == la]
+#         fig3.add_trace(
+#             go.Scatter(
+#                 x=dfx["date"],
+#                 y=dfx["newCasesByPublishDate"],
+#                 mode="lines",
+#                 name="",
+#                 text=dfx["areaName"],
+#                 showlegend=False,
+#                 customdata=dfx["newCasesByPublishDate"],
+#                 hovertemplate="<br><b>%{text}</b>: %{customdata}"
+#             )
+#         )
+#
+#     print(str(datetime.now()), "[3] finish update_local_authority_chart...")
+#     return fig3
 
 
 '''
@@ -646,60 +650,59 @@ CALLBACK FOR TOTALS CHART
 =========================
 '''
 
-
-@app.callback(
-    Output("chart4", "figure"),
-    Input("dummy", "children")
-)
-def return_tot_chart(none):
-    date_list = df["date"].unique()
-    # print(str(datetime.datetime.now()), "[4] start totals_timeline...")
-
-    fig5 = go.Figure()
-    fig5.update_layout(
-        title="<b>UK Daily Cases</b>",
-        title_font_color=textcol,
-        font_color=textcol,
-        font_size=fontsize,
-        plot_bgcolor=bgcol_2,
-        height=chart_h,
-        margin=dict(l=0, r=0, t=50, b=0),
-        showlegend=False,
-        xaxis={
-            "title": "",
-            "tickangle": 0,
-            "showgrid": False,
-            "fixedrange": True
-        },
-        yaxis={
-            "title": "",
-            "showgrid": False,
-            "zeroline": False,
-            "fixedrange": True
-        },
-        hovermode="x"
-    )
-
-    tot_cases = []
-    for dt in date_list:
-        dfx = df_tot[df_tot["date"] == dt]
-        tc = dfx["newCasesByPublishDate"].sum()
-        tot_cases.append(tc)
-
-    fig5.add_trace(
-        go.Scatter(
-            x=date_list,
-            y=tot_cases,
-            fill="tonexty",
-            mode="none",
-            name="Cases",
-            showlegend=False,
-            hovertemplate=None
-        )
-    )
-
-    # print(str(datetime.datetime.now()), "[4] finish totals_timeline...")
-    return fig5
+# @app.callback(
+#     Output("chart4", "figure"),
+#     Input("dummy", "children")
+# )
+# def return_tot_chart(none):
+#     date_list = df["date"].unique()
+#     print(str(datetime.now()), "[4] start uk_totals_chart...")
+#
+#     fig5 = go.Figure()
+#     fig5.update_layout(
+#         title="<b>UK Daily Cases</b>",
+#         title_font_color=textcol,
+#         font_color=textcol,
+#         font_size=fontsize,
+#         plot_bgcolor=bgcol_2,
+#         height=chart_h,
+#         margin=dict(l=0, r=0, t=50, b=0),
+#         showlegend=False,
+#         xaxis={
+#             "title": "",
+#             "tickangle": 0,
+#             "showgrid": False,
+#             "fixedrange": True
+#         },
+#         yaxis={
+#             "title": "",
+#             "showgrid": False,
+#             "zeroline": False,
+#             "fixedrange": True
+#         },
+#         hovermode="x"
+#     )
+#
+#     tot_cases = []
+#     for dt in date_list:
+#         dfx = df_tot[df_tot["date"] == dt]
+#         tc = dfx["newCasesByPublishDate"].sum()
+#         tot_cases.append(tc)
+#
+#     fig5.add_trace(
+#         go.Scatter(
+#             x=date_list,
+#             y=tot_cases,
+#             fill="tonexty",
+#             mode="none",
+#             name="Cases",
+#             showlegend=False,
+#             hovertemplate=None
+#         )
+#     )
+#
+#     print(str(datetime.now()), "[4] finish uk_totals_chart...")
+#     return fig5
 
 
 '''
@@ -719,7 +722,7 @@ CALLBACK FOR SUMMARY BOXES
     Input("date_picker", "date")
 )
 def return_summary(selected_date):
-    # print(str(datetime.datetime.now()), "[5] start update_summary...")
+    print(str(datetime.now()), "[5] start update_summary_box...")
     df1 = df_tot[df_tot["date"] == selected_date]
 
     new_cases = format(int(df1["newCasesByPublishDate"]), ",d")
@@ -727,7 +730,7 @@ def return_summary(selected_date):
     total_cases = format(int(df1["cumCasesByPublishDate"]), ",d")
     total_deaths = format(int(df1["cumDeaths28DaysByPublishDate"]), ",d")
 
-    # print(str(datetime.datetime.now()), "[5] finish update_summary...")
+    print(str(datetime.now()), "[5] finish update_summary_box...")
     return new_cases, new_deaths, total_cases, total_deaths
 
 
