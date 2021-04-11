@@ -20,7 +20,7 @@ Query cases for your neighbourhood (postcode) at https://ukcovid-19a.herokuapp.c
 (removed timeline graphs to speed up callback refresh)<br><br>
 
 # Input options:
-- Select date (starting from Aug 12, 2020)
+- Select date (last 7 days)
 - View daily data or cumulative data
 - Select local authorities<br><br>
 
