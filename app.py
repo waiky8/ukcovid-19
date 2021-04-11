@@ -53,13 +53,13 @@ PARAMETERS & VARIABLES
 # date_min = "2020-08-12"  # data available from this date
 date_max = df["date"].max()
 
-date_min = datetime.strptime(date_max, "%Y-%m-%d") + relativedelta(days=-14)  # 2 week's data
+date_min = datetime.strptime(date_max, "%Y-%m-%d") + relativedelta(days=-7)  # 7 day's data
 df = df[df["date"] >= str(date_min)]
 df_tot = df_tot[df_tot["date"] >= str(date_min)]
 
 marker_calc_size = 50  # used to (dynamically) calculate marker size on map
 topn = 10
-chart_h = 320
+chart_h = 360
 fontsize = 15
 
 textcol = "dimgrey"
@@ -101,7 +101,7 @@ app.layout = html.Div(
                     [
                         html.Div(
                             [
-                                html.P("Select Date (last 2 weeks):"),
+                                html.P("Select Date (last 7 days):"),
 
                                 dcc.DatePickerSingle(
                                     id="date_picker",

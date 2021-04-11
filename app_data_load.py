@@ -261,7 +261,20 @@ def return_new_data(selected_date):
                     sheet_name=sheetname,
                     index=False,
                     header=False,
-                    startrow=writer.sheets[sheetname].max_row
+                    startrow=writer.sheets[sheetname].max_row,
+                    columns=
+                    [
+                        "date",
+                        "areaType",
+                        "areaCode",
+                        "areaName",
+                        "cumCasesByPublishDate",
+                        "newCasesByPublishDate",
+                        "newDeaths28DaysByPublishDate",
+                        "cumDeaths28DaysByPublishDate",
+                        "Latitude",
+                        "Longitude"
+                    ]
                 )
                 writer.save()
                 date_list_daily.append(selected_date)
@@ -302,7 +315,18 @@ def return_new_data(selected_date):
                     sheet_name=sheetname,
                     index=False,
                     header=False,
-                    startrow=writer.sheets[sheetname].max_row
+                    startrow=writer.sheets[sheetname].max_row,
+                    columns=
+                    [
+                        "date",
+                        "areaType",
+                        "areaCode",
+                        "areaName",
+                        "cumCasesByPublishDate",
+                        "newCasesByPublishDate",
+                        "newDeaths28DaysByPublishDate",
+                        "cumDeaths28DaysByPublishDate"
+                    ]
                 )
                 writer.save()
                 date_list_totals.append(selected_date)
