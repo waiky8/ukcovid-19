@@ -38,11 +38,11 @@ READ EXCEL FILES
 ================
 '''
 
-# df = pd.read_excel("covid_data.xlsx")
-# df_tot = pd.read_excel("covid_totals.xlsx")
+df = pd.read_excel("covid_data.xlsx")
+df_tot = pd.read_excel("covid_totals.xlsx")
 
-df = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_data.xlsx?raw=true")
-df_tot = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_totals.xlsx?raw=true")
+# df = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_data.xlsx?raw=true")
+# df_tot = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_totals.xlsx?raw=true")
 
 '''
 ======================
@@ -54,6 +54,7 @@ PARAMETERS & VARIABLES
 date_max = df["date"].max()
 
 date_min = datetime.strptime(date_max, "%Y-%m-%d") + relativedelta(days=-7)  # 7 day's data
+date_min_sel = datetime.strptime(date_max, "%Y-%m-%d") + relativedelta(days=-6)  # minimum date calendar select
 df = df[df["date"] >= str(date_min)]
 df_tot = df_tot[df_tot["date"] >= str(date_min)]
 
@@ -111,7 +112,7 @@ app.layout = html.Div(
                                     display_format="MMM D, YYYY",
                                     day_size=50,
                                     initial_visible_month=date_max,
-                                    min_date_allowed=date_min,
+                                    min_date_allowed=date_min_sel,
                                     max_date_allowed=date_max
                                 ),
 
