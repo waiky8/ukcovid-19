@@ -8,7 +8,6 @@ There are plenty of (UK) covid dashboards available but not many that show compa
 Data is refreshed and uploaded daily.<br><br>
 The application is uploaded to **Heroku**.<br><br>
 Check it out at https://ukcovid-19.herokuapp.com/<br><br>
-Query cases for your neighbourhood (postcode) at https://ukcovid-19a.herokuapp.com/ (code not uploaded as it is similar to main app).<br><br>
 
 # Features:
 - Summary of cases/deaths
