@@ -13,13 +13,13 @@ Check it out at https://ukcovid-19.herokuapp.com/<br><br>
 - Summary of cases/deaths
 - Map with markers showing the covid cases and deaths for each local authority
 - Bar charts showing cases/deaths for daily or cumulative figures
-- ~~Graphical timeline of cases for selected local authorities~~
-- ~~Graphical timeline of daily cases~~<br>
+- Graphical timeline of cases for selected local authorities
+- Graphical timeline of daily cases<br>
 
-(removed timeline graphs to speed up callback refresh)<br><br>
+(reduced data to last 7 days to speed up callback refresh)<br><br>
 
 # Input options:
-- Select date (last 7 days)
+- Select date
 - View daily data or cumulative data
 - Select local authorities<br><br>
 
