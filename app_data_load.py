@@ -8,6 +8,7 @@ from openpyxl import load_workbook
 import bs4 as bs
 import urllib.request
 import datetime
+from datetime import date
 
 '''
 ===========
@@ -54,6 +55,7 @@ PARAMETERS & VARIABLES
 
 date_min = "2020-08-12"  # data available from this date
 date_max = df_daily["date"].max()
+date_today = date.today()
 
 date_list_daily = [str(d) for d in df_daily["date"].unique()]
 date_list_totals = [str(d) for d in df_totals["date"].unique()]
@@ -103,7 +105,7 @@ app.layout = html.Div(
                                     day_size=50,
                                     initial_visible_month=date_max,
                                     min_date_allowed=date_min,
-                                    # max_date_allowed=date_max
+                                    max_date_allowed=date_today
                                 )
                             ]
                         ),
