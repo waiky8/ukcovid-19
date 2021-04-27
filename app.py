@@ -38,11 +38,11 @@ READ EXCEL FILES
 ================
 '''
 
-df = pd.read_excel("covid_data.xlsx")
-df_tot = pd.read_excel("covid_totals.xlsx")
+# df = pd.read_excel("covid_data.xlsx")
+# df_tot = pd.read_excel("covid_totals.xlsx")
 
-# df = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_data.xlsx?raw=true")
-# df_tot = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_totals.xlsx?raw=true")
+df = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_data.xlsx?raw=true")
+df_tot = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_totals.xlsx?raw=true")
 
 '''
 ======================
