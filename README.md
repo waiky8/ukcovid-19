@@ -16,7 +16,7 @@ Check it out at https://ukcovid-19.herokuapp.com/<br><br>
 - Graphical timeline of cases for selected local authorities
 - Graphical timeline of daily cases<br>
 
-(reduced data to last 7 days to speed up callback refresh)<br><br>
+(reduced data to last 28 days to speed up callback refresh)<br><br>
 
 # Input options:
 - Select date
