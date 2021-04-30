@@ -218,14 +218,14 @@ def return_new_data(selected_date):
                 i += 1
                 loc_auth = r.areaName
 
-                if loc_auth == "Hackney and City of London":
-                    loc_auth = "Hackney"
+                # if loc_auth == "Hackney and City of London":
+                #     loc_auth = "Hackney"
 
-                if loc_auth == "Cornwall and Isles of Scilly":
-                    loc_auth = "Cornwall"
+                # if loc_auth == "Cornwall and Isles of Scilly":
+                #     loc_auth = "Cornwall"
 
-                if loc_auth == "Comhairle nan Eilean Siar":
-                    loc_auth = "Na h-Eileanan Siar"
+                # if loc_auth == "Comhairle nan Eilean Siar":
+                #     loc_auth = "Na h-Eileanan Siar"
 
                 lat, long = get_coord(loc_auth)
 
@@ -356,6 +356,29 @@ def get_coord(loc_auth):
 
     if pd.isna(loc_auth):
         return lat, long
+
+    '''
+    Try to get lat/long from existing data to speed up runtime
+    '''
+
+    lat = df_daily[df_daily["areaName"] == loc_auth]["Latitude"].values[0]
+    long = df_daily[df_daily["areaName"] == loc_auth]["Longitude"].values[0]
+
+    if lat != "":
+        return lat, long
+
+    '''
+    Now try to get lat/long from doogal
+    '''
+
+    if loc_auth == "Hackney and City of London":
+        loc_auth = "Hackney"
+
+    if loc_auth == "Cornwall and Isles of Scilly":
+        loc_auth = "Cornwall"
+
+    if loc_auth == "Comhairle nan Eilean Siar":
+        loc_auth = "Na h-Eileanan Siar"
 
     url = "https://www.doogal.co.uk/AdministrativeAreas.php"
 
