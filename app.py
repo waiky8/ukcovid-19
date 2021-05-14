@@ -20,17 +20,17 @@ SET-UP DASH
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
                 meta_tags=[
-                    {"name": "viewport",
-                     "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,"
+                    {'name': 'viewport',
+                     'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'
                      }
                 ]
                 )
 server = app.server
-app.title = "UK Covid-19"
+app.title = 'UK Covid-19'
 
 config = ConfigParser()
-config.read("config.ini")
-mapbox_access_token = config["mapbox"]["secret_token"]
+config.read('config.ini')
+mapbox_access_token = config['mapbox']['secret_token']
 
 '''
 ================
@@ -38,11 +38,11 @@ READ EXCEL FILES
 ================
 '''
 
-# df = pd.read_excel("covid_data.xlsx")
-# df_tot = pd.read_excel("covid_totals.xlsx")
+# df = pd.read_excel('covid_data.xlsx')
+# df_tot = pd.read_excel('covid_totals.xlsx')
 
-df = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_data.xlsx?raw=true")
-df_tot = pd.read_excel("https://github.com/waiky8/ukcovid-19/blob/main/covid_totals.xlsx?raw=true")
+df = pd.read_excel('https://github.com/waiky8/ukcovid-19/blob/main/covid_data.xlsx?raw=true')
+df_tot = pd.read_excel('https://github.com/waiky8/ukcovid-19/blob/main/covid_totals.xlsx?raw=true')
 
 '''
 ======================
@@ -50,29 +50,29 @@ PARAMETERS & VARIABLES
 ======================
 '''
 
-# date_min = "2020-08-12"  # data available from this date
-date_max = df["date"].max()
+# date_min = '2020-08-12'  # data available from this date
+date_max = df['date'].max()
 
 days_data = 28
 days_data_less_1 = 27
 
-date_min = datetime.strptime(date_max, "%Y-%m-%d") + relativedelta(days=-days_data)  # 14 day's data
-date_min_sel = datetime.strptime(date_max, "%Y-%m-%d") + relativedelta(days=-days_data_less_1)  # minimum date calendar select
-df = df[df["date"] >= str(date_min)]
-df_tot = df_tot[df_tot["date"] >= str(date_min)]
+date_min = datetime.strptime(date_max, '%Y-%m-%d') + relativedelta(days=-days_data)  # 14 day's data
+date_min_sel = datetime.strptime(date_max, '%Y-%m-%d') + relativedelta(days=-days_data_less_1)  # minimum date calendar select
+df = df[df['date'] >= str(date_min)]
+df_tot = df_tot[df_tot['date'] >= str(date_min)]
 
 marker_calc_size = 50  # used to (dynamically) calculate marker size on map
 topn = 10
 chart_h = 360
 fontsize = 15
 
-textcol = "dimgrey"
-bgcol_1 = "white"
-bgcol_2 = "whitesmoke"
-col_1 = "teal"
-col_2 = "firebrick"
-col_3 = "lightseagreen"
-col_4 = "indianred"
+textcol = 'dimgrey'
+bgcol_1 = 'white'
+bgcol_2 = 'whitesmoke'
+col_1 = 'teal'
+col_2 = 'firebrick'
+col_3 = 'lightseagreen'
+col_4 = 'indianred'
 
 '''
 ===================
@@ -84,10 +84,10 @@ app.layout = html.Div(
     [
         html.Div(
             [
-                html.H1("UK Covid-19"),
-                html.H3("(by Local Authority - Daily)")
+                html.H1('UK Covid-19'),
+                html.H3('(by Local Authority - Daily)')
             ],
-            style={"text-align": "center", "font-weight": "bold"}
+            style={'text-align': 'center', 'font-weight': 'bold'}
         ),
 
         html.Br(),
@@ -98,14 +98,14 @@ app.layout = html.Div(
                     [
                         html.Div(
                             [
-                                html.P("Select Date (last " + str(days_data) + " days):"),
+                                html.P('Select Date (last ' + str(days_data) + ' days):'),
 
                                 dcc.DatePickerSingle(
-                                    id="date_picker",
+                                    id='date_picker',
                                     clearable=True,
                                     with_portal=True,
                                     date=date_max,
-                                    display_format="MMM D, YYYY",
+                                    display_format='MMM D, YYYY',
                                     day_size=50,
                                     initial_visible_month=date_max,
                                     min_date_allowed=date_min_sel,
@@ -115,13 +115,13 @@ app.layout = html.Div(
                                 html.Br(), html.Br(),
 
                                 dcc.Dropdown(
-                                    id="locauth_drop",
-                                    options=[{"label": i, "value": i} for i in sorted(df["areaName"].unique())],
+                                    id='locauth_drop',
+                                    options=[{'label': i, 'value': i} for i in sorted(df['areaName'].unique())],
                                     multi=True,
-                                    placeholder="Local Authority (Mutli-Select)",
-                                    style={"font-size": fontsize, "color": "black", "background-color": bgcol_1}
+                                    placeholder='Local Authority (Mutli-Select)',
+                                    style={'font-size': fontsize, 'color': 'black', 'background-color': bgcol_1}
                                 )
-                            ], style={"padding": "0px 10px 0px 10px"}
+                            ], style={'padding': '0px 10px 0px 10px'}
                         ),
 
                         html.Br(),
@@ -132,8 +132,8 @@ app.layout = html.Div(
                                     [
                                         dbc.Col(
                                             [
-                                                html.P("Cumulative")
-                                            ], className="col-3"
+                                                html.P('Cumulative')
+                                            ], className='col-3'
 
                                         ),
 
@@ -143,18 +143,18 @@ app.layout = html.Div(
                                                     id='data_type',
                                                     on=True
                                                 )
-                                            ], className="col-3"
+                                            ], className='col-3'
                                         ),
 
                                         dbc.Col(
                                             [
-                                                html.P("Daily")
-                                            ], className="col-3"
+                                                html.P('Daily')
+                                            ], className='col-3'
 
                                         ),
                                     ]
                                 )
-                            ], style={"padding": "0px 10px 0px 10px"}
+                            ], style={'padding': '0px 10px 0px 10px'}
                         ),
 
                         html.Div(
@@ -163,8 +163,8 @@ app.layout = html.Div(
                                     [
                                         dbc.Col(
                                             [
-                                                html.P("Deaths")
-                                            ], className="col-3"
+                                                html.P('Deaths')
+                                            ], className='col-3'
 
                                         ),
 
@@ -174,21 +174,21 @@ app.layout = html.Div(
                                                     id='cases_deaths_switch',
                                                     on=True
                                                 )
-                                            ], className="col-3"
+                                            ], className='col-3'
                                         ),
 
                                         dbc.Col(
                                             [
-                                                html.P("Cases")
-                                            ], className="col-3"
+                                                html.P('Cases')
+                                            ], className='col-3'
                                         )
                                     ]
                                 )
-                            ], style={"padding": "0px 10px 0px 10px"}
+                            ], style={'padding': '0px 10px 0px 10px'}
                         ),
-                    ], style={"background": bgcol_2}
+                    ], style={'background': bgcol_2}
                 ),
-            ], style={"padding": "0px 30px 0px 30px"}
+            ], style={'padding': '0px 30px 0px 30px'}
         ),
 
         html.Br(), html.Br(),
@@ -204,17 +204,17 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H4("New Cases", className="card-title"),
+                                            html.H4('New Cases', className='card-title'),
                                             html.H3(
-                                                id="new_cases",
-                                                className="card-value",
-                                                style={"font-weight": "bold"}
+                                                id='new_cases',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
                                             )
                                         ],
                                         style={
-                                            "color": bgcol_1,
-                                            "background": col_1,
-                                            "text-align": "center"
+                                            'color': bgcol_1,
+                                            'background': col_1,
+                                            'text-align': 'center'
                                         }
                                     )
                                 ),
@@ -222,21 +222,21 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H4("New Deaths", className="card-title"),
+                                            html.H4('New Deaths', className='card-title'),
                                             html.H3(
-                                                id="new_deaths",
-                                                className="card-value",
-                                                style={"font-weight": "bold"}
+                                                id='new_deaths',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
                                             )
                                         ],
                                         style={
-                                            "color": bgcol_1,
-                                            "background": col_2,
-                                            "text-align": "center"
+                                            'color': bgcol_1,
+                                            'background': col_2,
+                                            'text-align': 'center'
                                         }
                                     )
                                 )
-                            ], style={"padding": "0px 10px 0px 10px"}
+                            ], style={'padding': '0px 10px 0px 10px'}
                         ),
 
                         html.Br(),
@@ -246,17 +246,17 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H4("Total Cases", className="card-title"),
+                                            html.H4('Total Cases', className='card-title'),
                                             html.H3(
-                                                id="total_cases",
-                                                className="card-value",
-                                                style={"font-weight": "bold"}
+                                                id='total_cases',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
                                             )
                                         ],
                                         style={
-                                            "color": bgcol_1,
-                                            "background": col_3,
-                                            "text-align": "center"
+                                            'color': bgcol_1,
+                                            'background': col_3,
+                                            'text-align': 'center'
                                         }
                                     )
                                 ),
@@ -264,27 +264,27 @@ app.layout = html.Div(
                                 dbc.Col(
                                     dbc.Card(
                                         [
-                                            html.H4("Total Deaths", className="card-title"),
+                                            html.H4('Total Deaths', className='card-title'),
                                             html.H3(
-                                                id="total_deaths",
-                                                className="card-value",
-                                                style={"font-weight": "bold"}
+                                                id='total_deaths',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
                                             )
                                         ],
                                         style={
-                                            "color": bgcol_1,
-                                            "background": col_4,
-                                            "text-align": "center"
+                                            'color': bgcol_1,
+                                            'background': col_4,
+                                            'text-align': 'center'
                                         }
                                     )
                                 )
-                            ], style={"padding": "0px 10px 0px 10px"}
+                            ], style={'padding': '0px 10px 0px 10px'}
                         ),
 
                         html.Br()
-                    ], style={"background": bgcol_2}
+                    ], style={'background': bgcol_2}
                 )
-            ], style={"padding": "0px 30px 0px 30px"}
+            ], style={'padding': '0px 30px 0px 30px'}
         ),
 
         html.Br(), html.Br(),
@@ -292,11 +292,11 @@ app.layout = html.Div(
         html.Div(
             dcc.Loading(
                 dcc.Graph(
-                    id="covid_map",
+                    id='covid_map',
                     figure={},
-                    config={"displayModeBar": False}
+                    config={'displayModeBar': False}
                 )
-            ), style={"padding": "0px 20px 0px 20px"}
+            ), style={'padding': '0px 20px 0px 20px'}
         ),
 
         html.Br(), html.Br(),
@@ -305,29 +305,29 @@ app.layout = html.Div(
             [
                 dcc.Loading(
                     dcc.Graph(
-                        id="chart1",
+                        id='chart1',
                         figure={},
-                        config={"displayModeBar": False}
-                    ), className="col-6"
+                        config={'displayModeBar': False}
+                    ), className='col-6'
                 )
-            ], style={"padding": "0px 20px 0px 20px"}
+            ], style={'padding': '0px 20px 0px 20px'}
         ),
 
         html.Br(), html.Br(),
 
         html.Div(
             html.P("*Defaults to 'Sheffield' if no local authority selected"),
-            style={"font-style": "italic", "padding": "0px 20px 0px 20px"}
+            style={'font-style': 'italic', 'padding': '0px 20px 0px 20px'}
         ),
 
         html.Div(
             dcc.Loading(
                 dcc.Graph(
-                    id="chart3",
+                    id='chart3',
                     figure={},
-                    config={"displayModeBar": False}
+                    config={'displayModeBar': False}
                 )
-            ), style={"padding": "0px 20px 0px 20px"}
+            ), style={'padding': '0px 20px 0px 20px'}
         ),
 
         html.Br(), html.Br(),
@@ -335,38 +335,38 @@ app.layout = html.Div(
         html.Div(
             dcc.Loading(
                 dcc.Graph(
-                    id="chart4",
+                    id='chart4',
                     figure={},
-                    config={"displayModeBar": False}
+                    config={'displayModeBar': False}
                 )
-            ), style={"padding": "0px 20px 0px 20px"}
+            ), style={'padding': '0px 20px 0px 20px'}
         ),
 
         html.Br(), html.Br(), html.Br(),
 
         html.Div(
             html.P(
-                ["Data Source: ",
-                 html.A("GovUK", href="https://coronavirus.data.gov.uk/details/download", target="_blank")
+                ['Data Source: ',
+                 html.A('GovUK', href='https://coronavirus.data.gov.uk/details/download', target='_blank')
                  ]
             ),
-            style={"padding": "0px 0px 0px 50px"}
+            style={'padding': '0px 0px 0px 50px'}
         ),
 
         html.Div(
             html.P(
-                ["Code: ",
-                 html.A("Github", href="https://github.com/waiky8/ukcovid-19", target="_blank")
+                ['Code: ',
+                 html.A('Github', href='https://github.com/waiky8/ukcovid-19', target='_blank')
                  ]
             ),
-            style={"padding": "0px 0px 0px 50px"}
+            style={'padding': '0px 0px 0px 50px'}
         ),
 
         # dummy DIV to trigger totals_timeline callback
         html.Div(
-            id="dummy",
+            id='dummy',
             children=[],
-            style={"display": "none"}
+            style={'display': 'none'}
         )
     ]
 )
@@ -379,76 +379,76 @@ CALLBACK FOR MAP
 
 
 @app.callback(
-    Output("covid_map", "figure"),  # Output("datatable", "data"),
+    Output('covid_map', 'figure'),  # Output('datatable', 'data'),
     [
-        Input("date_picker", "date"),
-        Input("locauth_drop", "value"),
-        Input("data_type", "on"),
-        Input("cases_deaths_switch", "on")
+        Input('date_picker', 'date'),
+        Input('locauth_drop', 'value'),
+        Input('data_type', 'on'),
+        Input('cases_deaths_switch', 'on')
     ]
 )
 def return_datatable(selected_date, selected_auth, selected_data, selected_cases):
-    # print(str(datetime.now()), "[1] start update_map...")
+    # print(str(datetime.now()), '[1] start update_map...')
 
-    df1 = df[df["date"].isin([selected_date])]
+    df1 = df[df['date'].isin([selected_date])]
 
     if selected_data:
         if selected_cases:
-            display = "newCasesByPublishDate"
+            display = 'newCasesByPublishDate'
             marker_col = col_1
         else:
-            display = "newDeaths28DaysByPublishDate"
+            display = 'newDeaths28DaysByPublishDate'
             marker_col = col_2
     else:
         if selected_cases:
-            display = "cumCasesByPublishDate"
+            display = 'cumCasesByPublishDate'
             marker_col = col_3
         else:
-            display = "cumDeaths28DaysByPublishDate"
+            display = 'cumDeaths28DaysByPublishDate'
             marker_col = col_4
 
     if selected_auth is None or selected_auth == []:
         pass
     else:
-        df1 = df1[df1["areaName"].isin(selected_auth)]
+        df1 = df1[df1['areaName'].isin(selected_auth)]
 
     df1 = df1.sort_values(by=[display], ascending=False)
-    df1["Row"] = df1.reset_index().index
-    df1["Row"] += 1
+    df1['Row'] = df1.reset_index().index
+    df1['Row'] += 1
 
-    lat_mean = pd.to_numeric(df1["Latitude"]).mean()
-    lon_mean = pd.to_numeric(df1["Longitude"]).mean()
+    lat_mean = pd.to_numeric(df1['Latitude']).mean()
+    lon_mean = pd.to_numeric(df1['Longitude']).mean()
 
-    df1.loc[(pd.isna(df1["newDeaths28DaysByPublishDate"])), "newDeaths28DaysByPublishDate"] = 0
-    df1.loc[(pd.isna(df1["cumDeaths28DaysByPublishDate"])), "cumDeaths28DaysByPublishDate"] = 0
+    df1.loc[(pd.isna(df1['newDeaths28DaysByPublishDate'])), 'newDeaths28DaysByPublishDate'] = 0
+    df1.loc[(pd.isna(df1['cumDeaths28DaysByPublishDate'])), 'cumDeaths28DaysByPublishDate'] = 0
 
     fig = go.Figure(
         go.Scattermapbox(
-            lat=df1["Latitude"],
-            lon=df1["Longitude"],
-            mode="text+markers",
-            marker={"size": df1[display] * marker_calc_size / df1[display].max(),
-                    "color": marker_col,
+            lat=df1['Latitude'],
+            lon=df1['Longitude'],
+            mode='text+markers',
+            marker={'size': df1[display] * marker_calc_size / df1[display].max(),
+                    'color': marker_col,
                     },
-            name="",
-            text=df1["areaName"],
+            name='',
+            text=df1['areaName'],
             textposition='top center',
             customdata=np.stack(
                 (
-                    df1["date"],
-                    df1["newCasesByPublishDate"],
-                    df1["newDeaths28DaysByPublishDate"],
-                    df1["cumCasesByPublishDate"],
-                    df1["cumDeaths28DaysByPublishDate"]
+                    df1['date'],
+                    df1['newCasesByPublishDate'],
+                    df1['newDeaths28DaysByPublishDate'],
+                    df1['cumCasesByPublishDate'],
+                    df1['cumDeaths28DaysByPublishDate']
                 ),
                 axis=-1
             ),
-            hovertemplate="<br><b>Date</b>: %{customdata[0]}" + \
-                          "<br><b>Local Authority</b>: %{text}" + \
-                          "<br><b>New Cases</b>: %{customdata[1]:,}" + \
-                          "<br><b>New Deaths</b>: %{customdata[2]:,}" + \
-                          "<br><b>Cumulative Cases</b>: %{customdata[3]:,}" + \
-                          "<br><b>Cumulative Deaths</b>: %{customdata[4]:,}"
+            hovertemplate='<br><b>Date</b>: %{customdata[0]}' + \
+                          '<br><b>Local Authority</b>: %{text}' + \
+                          '<br><b>New Cases</b>: %{customdata[1]:,}' + \
+                          '<br><b>New Deaths</b>: %{customdata[2]:,}' + \
+                          '<br><b>Cumulative Cases</b>: %{customdata[3]:,}' + \
+                          '<br><b>Cumulative Deaths</b>: %{customdata[4]:,}'
         )
     )
 
@@ -463,19 +463,19 @@ def return_datatable(selected_date, selected_auth, selected_data, selected_cases
             ),
             pitch=0,
             zoom=5,
-            style="light"  # satellite, outdoors, streets, dark
+            style='light'  # satellite, outdoors, streets, dark
         ),
         hoverlabel=dict(
             bgcolor=bgcol_1,
             font_size=12,
-            font_family="Rockwell"
+            font_family='Rockwell'
         ),
         margin=dict(t=0, b=0, l=0, r=0)
     )
 
-    # print(str(datetime.now()), "[1] finish update_map...")
+    # print(str(datetime.now()), '[1] finish update_map...')
 
-    return fig  # df1.to_dict("records")
+    return fig  # df1.to_dict('records')
 
 
 '''
@@ -486,79 +486,79 @@ CALLBACK FOR BAR CHARTS
 
 
 @app.callback(
-    Output("chart1", "figure"),
+    Output('chart1', 'figure'),
     [
-        Input("date_picker", "date"),
-        Input("locauth_drop", "value"),
-        Input("data_type", "on"),
-        Input("cases_deaths_switch", "on")
+        Input('date_picker', 'date'),
+        Input('locauth_drop', 'value'),
+        Input('data_type', 'on'),
+        Input('cases_deaths_switch', 'on')
     ]
 )
 def return_bar_charts(selected_date, selected_auth, selected_data, selected_cases):
-    # print(str(datetime.now()), "[2] start update_bar_chart...")
+    # print(str(datetime.now()), '[2] start update_bar_chart...')
 
     if selected_data:
         if selected_cases:
-            display = "newCasesByPublishDate"
-            title = "New Cases"
+            display = 'newCasesByPublishDate'
+            title = 'New Cases'
             bar_col = col_1
         else:
-            display = "newDeaths28DaysByPublishDate"
-            title = "New Deaths"
+            display = 'newDeaths28DaysByPublishDate'
+            title = 'New Deaths'
             bar_col = col_2
     else:
         if selected_cases:
-            display = "cumCasesByPublishDate"
-            title = " Total Cases"
+            display = 'cumCasesByPublishDate'
+            title = ' Total Cases'
             bar_col = col_3
         else:
-            display = "cumDeaths28DaysByPublishDate"
-            title = "Total Deaths"
+            display = 'cumDeaths28DaysByPublishDate'
+            title = 'Total Deaths'
             bar_col = col_4
 
-    df1 = df[df["date"].isin([selected_date])]
+    df1 = df[df['date'].isin([selected_date])]
 
     if selected_auth is None or selected_auth == []:
         pass
     else:
-        df1 = df1[df1["areaName"].isin(selected_auth)]
+        df1 = df1[df1['areaName'].isin(selected_auth)]
 
-    d = datetime.strptime(selected_date, "%Y-%m-%d")
+    d = datetime.strptime(selected_date, '%Y-%m-%d')
 
     data_fig = df1.sort_values(by=display, ascending=False)[:topn]
 
     fig = go.Figure(
         go.Bar(
-            orientation="h",
+            orientation='h',
             x=data_fig[display],
-            y=data_fig["areaName"],
-            texttemplate="%{y} - %{x:,}",
-            textposition="inside",
-            insidetextanchor="start"
+            y=data_fig['areaName'],
+            texttemplate='%{y} - %{x:,}',
+            textposition='inside',
+            insidetextanchor='start'
         )
     )
 
     fig.update_layout(
-        title="<b>" + title + ": " + d.strftime("%b %d, %Y") + "</b>",
+        title='<b>' + title + ': ' + d.strftime('%b %d, %Y') + '</b>',
         title_font_color=textcol,
         font_color=textcol,
         font_size=fontsize,
         showlegend=False,
         xaxis={
-            "categoryorder": "total descending",
-            "title": "",
-            "tickangle": 0,
-            "visible": False,
-            "showgrid": False,
-            "fixedrange": True
+            'categoryorder': 'total descending',
+            'title': '',
+            'tickangle': 0,
+            'visible': False,
+            'showgrid': False,
+            'fixedrange': True
         },
         yaxis={
-            "title": "",
-            "autorange": "reversed",
-            "visible": False,
-            "showgrid": False,
-            "zeroline": False,
-            "fixedrange": True
+            'title': '',
+            'autorange': 'reversed',
+            'visible': False,
+            'showgrid': False,
+            'zeroline': False,
+            'fixedrange': True
         },
         height=chart_h,
         margin=dict(l=0, r=0, t=50, b=0),
@@ -567,10 +567,10 @@ def return_bar_charts(selected_date, selected_auth, selected_data, selected_case
 
     fig.update_traces(
         marker_color=bar_col,
-        hoverinfo="skip"
+        hoverinfo='skip'
     )
 
-    # print(str(datetime.now()), "[2] finish update_bar_chart...")
+    # print(str(datetime.now()), '[2] finish update_bar_chart...')
 
     return fig
 
@@ -582,22 +582,22 @@ CALLBACK FOR LOCAL AUTHORITY CHART
 '''
 
 @app.callback(
-    Output("chart3", "figure"),
-    Input("locauth_drop", "value")
+    Output('chart3', 'figure'),
+    Input('locauth_drop', 'value')
 )
 def return_loc_auth_chart(selected_auth):
-    # print(str(datetime.now()), "[3] start update_local_authority_chart...")
+    # print(str(datetime.now()), '[3] start update_local_authority_chart...')
 
     if selected_auth is None or selected_auth == []:
-        locauth_list = ["Sheffield"]
-        df1 = df[df["areaName"].isin(locauth_list)]
+        locauth_list = ['Sheffield']
+        df1 = df[df['areaName'].isin(locauth_list)]
     else:
-        df1 = df[df["areaName"].isin(selected_auth)]
-        locauth_list = df1["areaName"].unique()
+        df1 = df[df['areaName'].isin(selected_auth)]
+        locauth_list = df1['areaName'].unique()
 
     fig3 = go.Figure()
     fig3.update_layout(
-        title="<b>Local Authority Cases</b>",
+        title='<b>Local Authority Cases</b>',
         title_font_color=textcol,
         font_color=textcol,
         font_size=fontsize,
@@ -605,42 +605,42 @@ def return_loc_auth_chart(selected_auth):
         height=chart_h,
         margin=dict(l=0, r=0, t=50, b=0),
         xaxis={
-            "title": "",
-            "tickangle": 0,
-            "showgrid": False,
-            "fixedrange": True
+            'title': '',
+            'tickangle': 0,
+            'showgrid': False,
+            'fixedrange': True
         },
         yaxis={
-            "title": "",
-            "showgrid": False,
-            "zeroline": False,
-            "fixedrange": True
+            'title': '',
+            'showgrid': False,
+            'zeroline': False,
+            'fixedrange': True
         },
         legend=dict(
-            yanchor="top",
+            yanchor='top',
             y=0.99,
-            xanchor="left",
+            xanchor='left',
             x=0.01
         ),
-        hovermode="x"
+        hovermode='x'
     )
 
     for la in locauth_list:
-        dfx = df1[df1["areaName"] == la]
+        dfx = df1[df1['areaName'] == la]
         fig3.add_trace(
             go.Scatter(
-                x=dfx["date"],
-                y=dfx["newCasesByPublishDate"],
-                mode="lines",
-                name="",
-                text=dfx["areaName"],
+                x=dfx['date'],
+                y=dfx['newCasesByPublishDate'],
+                mode='lines',
+                name='',
+                text=dfx['areaName'],
                 showlegend=False,
-                customdata=dfx["newCasesByPublishDate"],
-                hovertemplate="<br><b>%{text}</b>: %{customdata}"
+                customdata=dfx['newCasesByPublishDate'],
+                hovertemplate='<br><b>%{text}</b>: %{customdata}'
             )
         )
 
-    # print(str(datetime.now()), "[3] finish update_local_authority_chart...")
+    # print(str(datetime.now()), '[3] finish update_local_authority_chart...')
 
     return fig3
 
@@ -652,17 +652,17 @@ CALLBACK FOR TOTALS CHART
 '''
 
 @app.callback(
-    Output("chart4", "figure"),
-    Input("dummy", "children")
+    Output('chart4', 'figure'),
+    Input('dummy', 'children')
 )
 def return_tot_chart(none):
-    date_list = df["date"].unique()
+    date_list = df['date'].unique()
 
-    # print(str(datetime.now()), "[4] start uk_totals_chart...")
+    # print(str(datetime.now()), '[4] start uk_totals_chart...')
 
     fig4 = go.Figure()
     fig4.update_layout(
-        title="<b>UK Daily Cases</b>",
+        title='<b>UK Daily Cases</b>',
         title_font_color=textcol,
         font_color=textcol,
         font_size=fontsize,
@@ -671,39 +671,40 @@ def return_tot_chart(none):
         margin=dict(l=0, r=0, t=50, b=0),
         showlegend=False,
         xaxis={
-            "title": "",
-            "tickangle": 0,
-            "showgrid": False,
-            "fixedrange": True
+            'title': '',
+            'tickangle': 0,
+            'showgrid': False,
+            'fixedrange': True
         },
         yaxis={
-            "title": "",
-            "showgrid": False,
-            "zeroline": False,
-            "fixedrange": True
+            'title': '',
+            'showgrid': False,
+            'zeroline': False,
+            'fixedrange': True
         },
-        hovermode="x"
+        hovermode='x'
     )
 
     tot_cases = []
     for dt in date_list:
-        dfx = df_tot[df_tot["date"] == dt]
-        tc = dfx["newCasesByPublishDate"].sum()
+        dfx = df_tot[df_tot['date'] == dt]
+        tc = dfx['newCasesByPublishDate'].sum()
         tot_cases.append(tc)
 
     fig4.add_trace(
         go.Scatter(
             x=date_list,
             y=tot_cases,
-            fill="tonexty",
-            mode="none",
-            name="Cases",
+            fill='tonexty',
+            fillcolor=col_1,
+            mode='none',
+            name='Cases',
             showlegend=False,
             hovertemplate=None
         )
     )
 
-    # print(str(datetime.now()), "[4] finish uk_totals_chart...")
+    # print(str(datetime.now()), '[4] finish uk_totals_chart...')
 
     return fig4
 
@@ -717,27 +718,27 @@ CALLBACK FOR SUMMARY BOXES
 
 @app.callback(
     [
-        Output("new_cases", "children"),
-        Output("new_deaths", "children"),
-        Output("total_cases", "children"),
-        Output("total_deaths", "children")
+        Output('new_cases', 'children'),
+        Output('new_deaths', 'children'),
+        Output('total_cases', 'children'),
+        Output('total_deaths', 'children')
     ],
-    Input("date_picker", "date")
+    Input('date_picker', 'date')
 )
 def return_summary(selected_date):
-    # print(str(datetime.now()), "[5] start update_summary_box...")
+    # print(str(datetime.now()), '[5] start update_summary_box...')
 
-    df1 = df_tot[df_tot["date"] == selected_date]
+    df1 = df_tot[df_tot['date'] == selected_date]
 
-    new_cases = format(int(df1["newCasesByPublishDate"]), ",d")
-    new_deaths = format(int(df1["newDeaths28DaysByPublishDate"]), ",d")
-    total_cases = format(int(df1["cumCasesByPublishDate"]), ",d")
-    total_deaths = format(int(df1["cumDeaths28DaysByPublishDate"]), ",d")
+    new_cases = format(int(df1['newCasesByPublishDate']), ',d')
+    new_deaths = format(int(df1['newDeaths28DaysByPublishDate']), ',d')
+    total_cases = format(int(df1['cumCasesByPublishDate']), ',d')
+    total_deaths = format(int(df1['cumDeaths28DaysByPublishDate']), ',d')
 
-    # print(str(datetime.now()), "[5] finish update_summary_box...")
+    # print(str(datetime.now()), '[5] finish update_summary_box...')
 
     return new_cases, new_deaths, total_cases, total_deaths
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run_server(debug=True)
