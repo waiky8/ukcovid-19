@@ -212,10 +212,8 @@ def return_new_data(selected_date):
 
             latitude = []
             longitude = []
-            i = 0
 
-            for r in df_load.itertuples():
-                i += 1
+            for i, r in enumerate(df_load.itertuples(), start=1):
                 loc_auth = r.areaName
 
                 # if loc_auth == 'Hackney and City of London':
