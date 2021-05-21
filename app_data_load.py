@@ -280,10 +280,10 @@ def return_new_data(selected_date):
                 writer.save()
                 date_list_daily.append(selected_date)
 
-            message1 = 'Upload Complete ✔'
+            message1 = 'Upload Complete'
 
         except urllib.request.HTTPError:
-            message1 = 'Not Available ❌'
+            message1 = 'Not Available'
 
     '''
     -----------
@@ -292,7 +292,7 @@ def return_new_data(selected_date):
     '''
 
     if selected_date in date_list_totals:
-        message2 = 'Already Uploaded 👍'
+        message2 = 'Already Uploaded'
 
     else:
         url = url_uk + '&release=' + selected_date
@@ -332,10 +332,10 @@ def return_new_data(selected_date):
                 writer.save()
                 date_list_totals.append(selected_date)
 
-            message2 = 'Upload Complete ✔'
+            message2 = 'Upload Complete'
 
         except urllib.request.HTTPError:
-            message2 = 'Not Available ❌'
+            message2 = 'Not Available'
 
     print(str(datetime.datetime.now()), message1)
     print(str(datetime.datetime.now()), message2)
