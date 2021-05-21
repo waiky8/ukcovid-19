@@ -210,6 +210,7 @@ def return_new_data(selected_date):
             --------------------
             '''
 
+            tot_rows = df_load.shape[0]
             latitude = []
             longitude = []
 
@@ -239,7 +240,7 @@ def return_new_data(selected_date):
                 latitude.append(lat)
                 longitude.append(long)
 
-                print(i, loc_auth, lat, long)
+                print("[", i, "/", tot_rows, "]", loc_auth, lat, long)
 
             df_load['Latitude'] = latitude
             df_load['Longitude'] = longitude
