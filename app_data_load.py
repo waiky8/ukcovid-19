@@ -191,7 +191,7 @@ def return_new_data(selected_date):
     '''
 
     if selected_date in date_list_daily:
-        message1 = 'Already Uploaded 👍'
+        message1 = 'Already Uploaded'
 
     else:
         url = url_ltla + '&release=' + selected_date
