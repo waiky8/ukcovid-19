@@ -4,7 +4,8 @@ There are plenty of (UK) covid dashboards available but not many that show compa
 **Mapbox** is used to show cases/deaths for each local authority with markers and hover text.<br><br>
 
 Data is refreshed and uploaded daily (semi-automated).<br><br>
-The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.herokuapp.com/<br><br>
+The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.herokuapp.com/
+There is also another version that shows data for local area that is more granular and can be found at https://ukcovid-19a.herokuapp.com/<br><br>
 
 # Features:
 - Summary of cases/deaths
@@ -22,7 +23,8 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
 - Select local authorities<br><br>
 
 # Description of code/files:
- - **app.py** - main application code
+ - **app.py** - main application code that show data for local authority
+ - **app2.py** - main application code that show data for local area (more granular)
  - **app_data_load.py** - code to retrieve latest data from GovUK
  - **covid_data.xlsx** - covid daily data at local authority level
  - **covid_totals.xlsx** - covid totals data<br><br>
@@ -31,3 +33,5 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot1.png)
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot2.png)
 ![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot3.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot4.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot5.png)
