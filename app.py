@@ -2,13 +2,15 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
-import dash_table
-from dash_table.Format import Format, Scheme
+from dash.dependencies import Input, Output
 import plotly.graph_objects as go
+import dash_daq as daq
 import pandas as pd
-import bs4 as bs
-import urllib.request
+import numpy as np
+from datetime import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
+from configparser import ConfigParser
 
 '''
 ===========
@@ -24,33 +26,53 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.COSMO],
                 ]
                 )
 server = app.server
-app.title = 'UK Covid-19a'
+app.title = 'UK Covid-19'
+
+config = ConfigParser()
+config.read('config.ini')
+mapbox_access_token = config['mapbox']['secret_token']
 
 '''
-==================================================
-READ DATA FROM GOVUK URL & POSTCODE FROM CSV FILES
-==================================================
+================
+READ EXCEL FILES
+================
 '''
 
-file = 'https://api.coronavirus.data.gov.uk/v2/data?areaType=msoa&metric=newCasesBySpecimenDateRollingSum&metric=newCasesBySpecimenDateRollingRate&metric=newCasesBySpecimenDateChange&metric=newCasesBySpecimenDateChangePercentage&metric=newCasesBySpecimenDateDirection&format=csv'
+# df = pd.read_excel('covid_data.xlsx')
+# df_tot = pd.read_excel('covid_totals.xlsx')
 
-df = pd.read_csv(file)
+df = pd.read_excel('https://github.com/waiky8/ukcovid-19/blob/main/covid_data.xlsx?raw=true')
+df_tot = pd.read_excel('https://github.com/waiky8/ukcovid-19/blob/main/covid_totals.xlsx?raw=true')
 
 '''
 ======================
 PARAMETERS & VARIABLES
 ======================
 '''
+
+# date_min = '2020-08-12'  # data available from this date
 date_max = df['date'].max()
 
-topn = 5  # Number of items to show as 'top x'
-chart_h = 320  # height of charts
-datatable_rows = 10  # rows per page of datatable
+days_data = 28
+days_data_less_1 = 27
+
+date_min = datetime.strptime(date_max, '%Y-%m-%d') + relativedelta(days=-days_data)  # 14 day's data
+date_min_sel = datetime.strptime(date_max, '%Y-%m-%d') + relativedelta(days=-days_data_less_1)  # minimum date calendar select
+df = df[df['date'] >= str(date_min)]
+df_tot = df_tot[df_tot['date'] >= str(date_min)]
+
+marker_calc_size = 50  # used to (dynamically) calculate marker size on map
+topn = 10
+chart_h = 360
 fontsize = 15
 
 textcol = 'dimgrey'
 bgcol_1 = 'white'
 bgcol_2 = 'whitesmoke'
+col_1 = 'teal'
+col_2 = 'firebrick'
+col_3 = 'lightseagreen'
+col_4 = 'indianred'
 
 '''
 ===================
@@ -63,9 +85,110 @@ app.layout = html.Div(
         html.Div(
             [
                 html.H1('UK Covid-19'),
-                html.H3('(by Local Area - Weekly)')
+                html.H3('(by Local Authority - Daily)')
             ],
             style={'text-align': 'center', 'font-weight': 'bold'}
+        ),
+
+        html.Br(),
+
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.P('Select Date (last ' + str(days_data) + ' days):'),
+
+                                dcc.DatePickerSingle(
+                                    id='date_picker',
+                                    clearable=True,
+                                    with_portal=True,
+                                    date=date_max,
+                                    display_format='MMM D, YYYY',
+                                    day_size=50,
+                                    initial_visible_month=date_max,
+                                    min_date_allowed=date_min_sel,
+                                    max_date_allowed=date_max
+                                ),
+
+                                html.Br(), html.Br(),
+
+                                dcc.Dropdown(
+                                    id='locauth_drop',
+                                    options=[{'label': i, 'value': i} for i in sorted(df['areaName'].unique())],
+                                    multi=True,
+                                    placeholder='Local Authority (Mutli-Select)',
+                                    style={'font-size': fontsize, 'color': 'black', 'background-color': bgcol_1}
+                                )
+                            ], style={'padding': '0px 10px 0px 10px'}
+                        ),
+
+                        html.Br(),
+
+                        html.Div(
+                            [
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            [
+                                                html.P('Cumulative')
+                                            ], className='col-3'
+
+                                        ),
+
+                                        dbc.Col(
+                                            [
+                                                daq.BooleanSwitch(
+                                                    id='data_type',
+                                                    on=True
+                                                )
+                                            ], className='col-3'
+                                        ),
+
+                                        dbc.Col(
+                                            [
+                                                html.P('Daily')
+                                            ], className='col-3'
+
+                                        ),
+                                    ]
+                                )
+                            ], style={'padding': '0px 10px 0px 10px'}
+                        ),
+
+                        html.Div(
+                            [
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            [
+                                                html.P('Deaths')
+                                            ], className='col-3'
+
+                                        ),
+
+                                        dbc.Col(
+                                            [
+                                                daq.BooleanSwitch(
+                                                    id='cases_deaths_switch',
+                                                    on=True
+                                                )
+                                            ], className='col-3'
+                                        ),
+
+                                        dbc.Col(
+                                            [
+                                                html.P('Cases')
+                                            ], className='col-3'
+                                        )
+                                    ]
+                                )
+                            ], style={'padding': '0px 10px 0px 10px'}
+                        ),
+                    ], style={'background': bgcol_2}
+                ),
+            ], style={'padding': '0px 30px 0px 30px'}
         ),
 
         html.Br(), html.Br(),
@@ -76,54 +199,90 @@ app.layout = html.Div(
                     [
                         html.Br(),
 
-                        dcc.Dropdown(
-                            id='date_drop',
-                            options=[{'label': i, 'value': i} for i in sorted(df['date'].unique())],
-                            multi=False,
-                            placeholder='Select Date',
-                            value=date_max,
-                            style={'font-size': fontsize, 'color': 'black', 'background-color': bgcol_1}
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    dbc.Card(
+                                        [
+                                            html.H4('New Cases', className='card-title'),
+                                            html.H3(
+                                                id='new_cases',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
+                                            )
+                                        ],
+                                        style={
+                                            'color': bgcol_1,
+                                            'background': col_1,
+                                            'text-align': 'center'
+                                        }
+                                    )
+                                ),
+
+                                dbc.Col(
+                                    dbc.Card(
+                                        [
+                                            html.H4('New Deaths', className='card-title'),
+                                            html.H3(
+                                                id='new_deaths',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
+                                            )
+                                        ],
+                                        style={
+                                            'color': bgcol_1,
+                                            'background': col_2,
+                                            'text-align': 'center'
+                                        }
+                                    )
+                                )
+                            ], style={'padding': '0px 10px 0px 10px'}
                         ),
 
                         html.Br(),
-
-                        dcc.Dropdown(
-                            id='ltla_drop',
-                            options=[{'label': i, 'value': i} for i in sorted(df['LtlaName'].unique())],
-                            multi=True,
-                            placeholder='Local Authority (Mutli-Select)',
-                            style={'font-size': fontsize, 'color': 'black', 'background-color': bgcol_1}
-                        ),
-
-                        html.Br(),
-
-                        dcc.Dropdown(
-                            id='msoa_drop',
-                            options=[{'label': i, 'value': i} for i in sorted(df['areaName'].unique())],
-                            multi=True,
-                            placeholder='Local Area (Mutli-Select)',
-                            style={'font-size': fontsize, 'color': 'black', 'background-color': bgcol_1}
-                        ),
-
-                        html.Br(),
-
-                        html.P('Postcode/Local Area Lookup:'),
 
                         dbc.Row(
                             [
-                                dcc.Input(
-                                    id='postcode_inp',
-                                    className='col-4',
-                                    placeholder='Post Code',
-                                    style={'font-size': fontsize, 'color': 'black', 'background-color': bgcol_1}
+                                dbc.Col(
+                                    dbc.Card(
+                                        [
+                                            html.H4('Total Cases', className='card-title'),
+                                            html.H3(
+                                                id='total_cases',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
+                                            )
+                                        ],
+                                        style={
+                                            'color': bgcol_1,
+                                            'background': col_3,
+                                            'text-align': 'center'
+                                        }
+                                    )
                                 ),
 
-                                html.P(id='message', className='col-8'),
-                            ]
+                                dbc.Col(
+                                    dbc.Card(
+                                        [
+                                            html.H4('Total Deaths', className='card-title'),
+                                            html.H3(
+                                                id='total_deaths',
+                                                className='card-value',
+                                                style={'font-weight': 'bold'}
+                                            )
+                                        ],
+                                        style={
+                                            'color': bgcol_1,
+                                            'background': col_4,
+                                            'text-align': 'center'
+                                        }
+                                    )
+                                )
+                            ], style={'padding': '0px 10px 0px 10px'}
                         ),
 
                         html.Br()
-                    ], style={'background': bgcol_2, 'padding': '0px 30px 0px 30px'}
+                    ], style={'background': bgcol_2}
                 )
             ], style={'padding': '0px 30px 0px 30px'}
         ),
@@ -131,143 +290,52 @@ app.layout = html.Div(
         html.Br(), html.Br(),
 
         html.Div(
+            dcc.Loading(
+                dcc.Graph(
+                    id='covid_map',
+                    figure={},
+                    config={'displayModeBar': False}
+                )
+            ), style={'padding': '0px 20px 0px 20px'}
+        ),
+
+        html.Br(), html.Br(),
+
+        html.Div(
             [
                 dcc.Loading(
-                    dash_table.DataTable(
-                        id='datatable',
-
-                        columns=[
-                            # {
-                            #     'id': 'Row',
-                            #     'name': 'Row',
-                            #     'type': 'numeric'
-                            # },
-                            {
-                                'id': 'areaName',
-                                'name': 'Local Area',
-                                'type': 'text'
-                            },
-                            {
-                                'id': 'LtlaName',
-                                'name': 'Local Authority',
-                                'type': 'text'
-                            },
-                            {
-                                'id': 'newCasesBySpecimenDateRollingSum',
-                                'name': 'New Cases',
-                                'type': 'numeric',
-                                'format': Format(
-                                    precision=0,
-                                    group=',',
-                                    scheme=Scheme.fixed,
-                                    symbol=''
-                                )
-                            },
-                            {
-                                'id': 'newCasesBySpecimenDateDirection',
-                                'name': '',
-                                'type': 'text'
-                            }
-                        ],
-
-                        sort_action='none',
-                        sort_mode='single',
-                        filter_action='none',
-                        page_action='native',
-                        page_current=0,
-                        page_size=datatable_rows,
-                        fixed_rows={'headers': True},
-                        fixed_columns={'headers': True, 'data': 1},
-
-                        style_table={
-                            'overflowX': 'auto',
-                            'overflowY': 'auto',
-                            'minWidth': '100%',
-                            'height': '500px'
-                        },
-
-                        style_header={
-                            'bold': True,
-                            'color': textcol,
-                            'backgroundColor': bgcol_2,
-                            'whiteSpace': 'normal',
-                            'height': '72px'
-                        },
-
-                        style_cell={
-                            'color': textcol,
-                            'backgroundColor': bgcol_1,
-                            'font-family': 'Verdana',
-                            'font_size': fontsize,
-                            'minWidth': 5,
-                            'maxWidth': 160,
-                            'padding': '0px 10px 0px 10px'
-                        },
-
-                        style_cell_conditional=[
-                            {
-                                'if': {
-                                    'column_id': 'Row'
-                                },
-                                'width': '5px'
-                            },
-                            {
-                                'if': {
-                                    'column_id': 'areaName'
-                                },
-                                'textAlign': 'left',
-                                'width': '50px'
-                            },
-                            {
-                                'if': {
-                                    'column_id': 'LtlaName'
-                                },
-                                'textAlign': 'left',
-                                'width': '50px'
-                            },
-                            {
-                                'if': {
-                                    'column_id': 'newCasesBySpecimenDateRollingSum'
-                                },
-                                'width': '20px',
-                            },
-                            {
-                                'if': {
-                                    'column_id': 'newCasesBySpecimenDateDirection'
-                                },
-                                'textAlign': 'center',
-                                'width': '20px',
-                            }
-                        ],
-
-                        style_data={
-                            'whiteSpace': 'normal',
-                            'height': 'auto'
-                        },
-
-                        css=[
-                            {
-                                'selector': '.row',
-                                'rule': 'margin: 0; flex-wrap: nowrap'
-                            }
-                        ]
-                    )
+                    dcc.Graph(
+                        id='chart1',
+                        figure={},
+                        config={'displayModeBar': False}
+                    ), className='col-6'
                 )
             ], style={'padding': '0px 20px 0px 20px'}
         ),
 
-        html.Br(), html.Br(), html.Br(),
+        html.Br(), html.Br(),
 
         html.Div(
-            [
-                html.P("*Defaults to 'Bents Green & Millhouses' if local area is not selected")
-            ], style={'font-style': 'italic', 'padding': '0px 20px 0px 20px'}
+            html.P("*Defaults to 'Sheffield' if no local authority selected"),
+            style={'font-style': 'italic', 'padding': '0px 20px 0px 20px'}
         ),
 
         html.Div(
             dcc.Loading(
                 dcc.Graph(
-                    id='chart1',
+                    id='chart3',
+                    figure={},
+                    config={'displayModeBar': False}
+                )
+            ), style={'padding': '0px 20px 0px 20px'}
+        ),
+
+        html.Br(), html.Br(),
+
+        html.Div(
+            dcc.Loading(
+                dcc.Graph(
+                    id='chart4',
                     figure={},
                     config={'displayModeBar': False}
                 )
@@ -292,80 +360,244 @@ app.layout = html.Div(
                  ]
             ),
             style={'padding': '0px 0px 0px 50px'}
+        ),
+
+        # dummy DIV to trigger totals_timeline callback
+        html.Div(
+            id='dummy',
+            children=[],
+            style={'display': 'none'}
         )
     ]
 )
 
 '''
-======================
-CALLBACK FOR DATATABLE
-======================
+================
+CALLBACK FOR MAP
+================
 '''
 
 
 @app.callback(
-    Output('datatable', 'data'),
+    Output('covid_map', 'figure'),  # Output('datatable', 'data'),
     [
-        Input('date_drop', 'value'),
-        Input('ltla_drop', 'value'),
-        Input('msoa_drop', 'value')
+        Input('date_picker', 'date'),
+        Input('locauth_drop', 'value'),
+        Input('data_type', 'on'),
+        Input('cases_deaths_switch', 'on')
     ]
 )
-def return_datatable(selected_date, selected_ltla, selected_area):
-    df1 = df.copy()
-    df1 = df1[df1['date'].isin([selected_date])]
+def return_datatable(selected_date, selected_auth, selected_data, selected_cases):
+    # print(str(datetime.now()), '[1] start update_map...')
 
-    if selected_ltla is None or selected_ltla == []:
+    df1 = df[df['date'].isin([selected_date])]
+
+    if selected_data:
+        if selected_cases:
+            display = 'newCasesByPublishDate'
+            marker_col = col_1
+        else:
+            display = 'newDeaths28DaysByPublishDate'
+            marker_col = col_2
+    else:
+        if selected_cases:
+            display = 'cumCasesByPublishDate'
+            marker_col = col_3
+        else:
+            display = 'cumDeaths28DaysByPublishDate'
+            marker_col = col_4
+
+    if selected_auth is None or selected_auth == []:
         pass
     else:
-        df1 = df1[df1['LtlaName'].isin(selected_ltla)]
+        df1 = df1[df1['areaName'].isin(selected_auth)]
 
-    if selected_area is None or selected_area == []:
-        pass
-    else:
-        df1 = df1[df1['areaName'].isin(selected_area)]
-
-    df1.loc[(df1.newCasesBySpecimenDateDirection == 'UP'), 'newCasesBySpecimenDateDirection'] = '↑'
-    df1.loc[(df1.newCasesBySpecimenDateDirection == 'DOWN'), 'newCasesBySpecimenDateDirection'] = '↓'
-    df1.loc[(df1.newCasesBySpecimenDateDirection == 'SAME'), 'newCasesBySpecimenDateDirection'] = '↔'
-
-    df1 = df1.sort_values(by=['newCasesBySpecimenDateRollingSum'], ascending=False)
+    df1 = df1.sort_values(by=[display], ascending=False)
     df1['Row'] = df1.reset_index().index
     df1['Row'] += 1
 
-    return df1.to_dict('records')
+    lat_mean = pd.to_numeric(df1['Latitude']).mean()
+    lon_mean = pd.to_numeric(df1['Longitude']).mean()
+
+    df1.loc[(pd.isna(df1['newDeaths28DaysByPublishDate'])), 'newDeaths28DaysByPublishDate'] = 0
+    df1.loc[(pd.isna(df1['cumDeaths28DaysByPublishDate'])), 'cumDeaths28DaysByPublishDate'] = 0
+
+    fig = go.Figure(
+        go.Scattermapbox(
+            lat=df1['Latitude'],
+            lon=df1['Longitude'],
+            mode='text+markers',
+            marker={'size': df1[display] * marker_calc_size / df1[display].max(),
+                    'color': marker_col,
+                    },
+            name='',
+            text=df1['areaName'],
+            textposition='top center',
+            customdata=np.stack(
+                (
+                    df1['date'],
+                    df1['newCasesByPublishDate'],
+                    df1['newDeaths28DaysByPublishDate'],
+                    df1['cumCasesByPublishDate'],
+                    df1['cumDeaths28DaysByPublishDate']
+                ),
+                axis=-1
+            ),
+            hovertemplate='<br><b>Date</b>: %{customdata[0]}' + \
+                          '<br><b>Local Authority</b>: %{text}' + \
+                          '<br><b>New Cases</b>: %{customdata[1]:,}' + \
+                          '<br><b>New Deaths</b>: %{customdata[2]:,}' + \
+                          '<br><b>Cumulative Cases</b>: %{customdata[3]:,}' + \
+                          '<br><b>Cumulative Deaths</b>: %{customdata[4]:,}'
+        )
+    )
+
+    fig.update_layout(
+        hovermode='closest',
+        mapbox=dict(
+            accesstoken=mapbox_access_token,
+            bearing=0,
+            center=dict(
+                lat=lat_mean,
+                lon=lon_mean
+            ),
+            pitch=0,
+            zoom=5,
+            style='light'  # satellite, outdoors, streets, dark
+        ),
+        hoverlabel=dict(
+            bgcolor=bgcol_1,
+            font_size=12,
+            font_family='Rockwell'
+        ),
+        margin=dict(t=0, b=0, l=0, r=0)
+    )
+
+    # print(str(datetime.now()), '[1] finish update_map...')
+
+    return fig  # df1.to_dict('records')
 
 
 '''
-==================
-CALLBACK FOR CHART
-==================
+=======================
+CALLBACK FOR BAR CHARTS
+=======================
 '''
 
 
 @app.callback(
     Output('chart1', 'figure'),
     [
-        Input('ltla_drop', 'value'),
-        Input('msoa_drop', 'value')
+        Input('date_picker', 'date'),
+        Input('locauth_drop', 'value'),
+        Input('data_type', 'on'),
+        Input('cases_deaths_switch', 'on')
     ]
 )
-def return_chart(selected_ltla, selected_area):
-    if selected_area is None or selected_area == []:
-        loc_area_list = ['Bents Green & Millhouses']
-        df1 = df[df['areaName'].isin(loc_area_list)]
-    else:
-        df1 = df[df['areaName'].isin(selected_area)]
-        loc_area_list = df1['areaName'].unique()
+def return_bar_charts(selected_date, selected_auth, selected_data, selected_cases):
+    # print(str(datetime.now()), '[2] start update_bar_chart...')
 
-    if selected_ltla is None or selected_ltla == []:
+    if selected_data:
+        if selected_cases:
+            display = 'newCasesByPublishDate'
+            title = 'New Cases'
+            bar_col = col_1
+        else:
+            display = 'newDeaths28DaysByPublishDate'
+            title = 'New Deaths'
+            bar_col = col_2
+    else:
+        if selected_cases:
+            display = 'cumCasesByPublishDate'
+            title = ' Total Cases'
+            bar_col = col_3
+        else:
+            display = 'cumDeaths28DaysByPublishDate'
+            title = 'Total Deaths'
+            bar_col = col_4
+
+    df1 = df[df['date'].isin([selected_date])]
+
+    if selected_auth is None or selected_auth == []:
         pass
     else:
-        df1 = df1[df1['LtlaName'].isin(selected_ltla)]
+        df1 = df1[df1['areaName'].isin(selected_auth)]
 
-    fig1 = go.Figure()
-    fig1.update_layout(
-        title='<b>Local Area Cases</b>',
+    d = datetime.strptime(selected_date, '%Y-%m-%d')
+
+    data_fig = df1.sort_values(by=display, ascending=False)[:topn]
+
+    fig = go.Figure(
+        go.Bar(
+            orientation='h',
+            x=data_fig[display],
+            y=data_fig['areaName'],
+            texttemplate='%{y} - %{x:,}',
+            textposition='inside',
+            insidetextanchor='start'
+        )
+    )
+
+    fig.update_layout(
+        title='<b>' + title + ': ' + d.strftime('%b %d, %Y') + '</b>',
+        title_font_color=textcol,
+        font_color=textcol,
+        font_size=fontsize,
+        showlegend=False,
+        xaxis={
+            'categoryorder': 'total descending',
+            'title': '',
+            'tickangle': 0,
+            'visible': False,
+            'showgrid': False,
+            'fixedrange': True
+        },
+        yaxis={
+            'title': '',
+            'autorange': 'reversed',
+            'visible': False,
+            'showgrid': False,
+            'zeroline': False,
+            'fixedrange': True
+        },
+        height=chart_h,
+        margin=dict(l=0, r=0, t=50, b=0),
+        plot_bgcolor=bgcol_2
+    )
+
+    fig.update_traces(
+        marker_color=bar_col,
+        hoverinfo='skip'
+    )
+
+    # print(str(datetime.now()), '[2] finish update_bar_chart...')
+
+    return fig
+
+
+'''
+==================================
+CALLBACK FOR LOCAL AUTHORITY CHART
+==================================
+'''
+
+@app.callback(
+    Output('chart3', 'figure'),
+    Input('locauth_drop', 'value')
+)
+def return_loc_auth_chart(selected_auth):
+    # print(str(datetime.now()), '[3] start update_local_authority_chart...')
+
+    if selected_auth is None or selected_auth == []:
+        locauth_list = ['Sheffield']
+        df1 = df[df['areaName'].isin(locauth_list)]
+    else:
+        df1 = df[df['areaName'].isin(selected_auth)]
+        locauth_list = df1['areaName'].unique()
+
+    fig3 = go.Figure()
+    fig3.update_layout(
+        title='<b>Local Authority Cases</b>',
         title_font_color=textcol,
         font_color=textcol,
         font_size=fontsize,
@@ -384,89 +616,128 @@ def return_chart(selected_ltla, selected_area):
             'zeroline': False,
             'fixedrange': True
         },
+        legend=dict(
+            yanchor='top',
+            y=0.99,
+            xanchor='left',
+            x=0.01
+        ),
         hovermode='x'
     )
 
-    for la in loc_area_list:
-        dfx = df1.copy()[df1['areaName'] == la]
-        dfx['newCasesBySpecimenDateRollingSum'].fillna(0, inplace=True)  # solve problem of gap in chart if blank value
-        fig1.add_trace(
+    for la in locauth_list:
+        dfx = df1[df1['areaName'] == la]
+        fig3.add_trace(
             go.Scatter(
                 x=dfx['date'],
-                y=dfx['newCasesBySpecimenDateRollingSum'],
+                y=dfx['newCasesByPublishDate'],
                 mode='lines',
                 name='',
                 text=dfx['areaName'],
                 showlegend=False,
-                customdata=dfx['newCasesBySpecimenDateRollingSum'],
+                customdata=dfx['newCasesByPublishDate'],
                 hovertemplate='<br><b>%{text}</b>: %{customdata}'
             )
         )
 
-    return fig1
+    # print(str(datetime.now()), '[3] finish update_local_authority_chart...')
+
+    return fig3
 
 
 '''
-=================================
-CALLBACK FOR POSTCODE/MSOA LOOKUP
-=================================
+=========================
+CALLBACK FOR TOTALS CHART
+=========================
+'''
+
+@app.callback(
+    Output('chart4', 'figure'),
+    Input('dummy', 'children')
+)
+def return_tot_chart(none):
+    date_list = df['date'].unique()
+
+    # print(str(datetime.now()), '[4] start uk_totals_chart...')
+
+    fig4 = go.Figure()
+    fig4.update_layout(
+        title='<b>UK Daily Cases</b>',
+        title_font_color=textcol,
+        font_color=textcol,
+        font_size=fontsize,
+        plot_bgcolor=bgcol_2,
+        height=chart_h,
+        margin=dict(l=0, r=0, t=50, b=0),
+        showlegend=False,
+        xaxis={
+            'title': '',
+            'tickangle': 0,
+            'showgrid': False,
+            'fixedrange': True
+        },
+        yaxis={
+            'title': '',
+            'showgrid': False,
+            'zeroline': False,
+            'fixedrange': True
+        },
+        hovermode='x'
+    )
+
+    tot_cases = []
+    for dt in date_list:
+        dfx = df_tot[df_tot['date'] == dt]
+        tc = dfx['newCasesByPublishDate'].sum()
+        tot_cases.append(tc)
+
+    fig4.add_trace(
+        go.Scatter(
+            x=date_list,
+            y=tot_cases,
+            fill='tonexty',
+            fillcolor=col_1,
+            mode='none',
+            name='Cases',
+            showlegend=False,
+            hovertemplate=None
+        )
+    )
+
+    # print(str(datetime.now()), '[4] finish uk_totals_chart...')
+
+    return fig4
+
+
+'''
+==========================
+CALLBACK FOR SUMMARY BOXES
+==========================
 '''
 
 
 @app.callback(
-    Output('message', 'children'),
     [
-        Input('postcode_inp', 'n_submit'),
-        Input('postcode_inp', 'n_blur')
+        Output('new_cases', 'children'),
+        Output('new_deaths', 'children'),
+        Output('total_cases', 'children'),
+        Output('total_deaths', 'children')
     ],
-    State('postcode_inp', 'value')
+    Input('date_picker', 'date')
 )
-def return_datatable(ns, nb, selected_postcode):
-    message = ''
+def return_summary(selected_date):
+    # print(str(datetime.now()), '[5] start update_summary_box...')
 
-    if selected_postcode is None or selected_postcode == '':
-        pass
-    else:
-        neighbourhood = get_data(selected_postcode.upper())
-        if neighbourhood == '':
-            message = 'Please enter valid full postcode'
-        else:
-            message = neighbourhood
+    df1 = df_tot[df_tot['date'] == selected_date]
 
-    return message
+    new_cases = format(int(df1['newCasesByPublishDate']), ',d')
+    new_deaths = format(int(df1['newDeaths28DaysByPublishDate']), ',d')
+    total_cases = format(int(df1['cumCasesByPublishDate']), ',d')
+    total_deaths = format(int(df1['cumDeaths28DaysByPublishDate']), ',d')
 
+    # print(str(datetime.now()), '[5] finish update_summary_box...')
 
-'''
-=================================
-MAP POSTCODE TO LOCAL AREA (MSOA)
-=================================
-'''
-
-
-def get_data(pcode):
-    area = ''
-
-    url = ('https://www.doogal.co.uk/ShowMap.php?postcode=' + pcode).replace(' ', '%20')
-
-    try:
-        source = urllib.request.urlopen(url)
-        soup = bs.BeautifulSoup(source, 'lxml')
-        tables = soup.find_all('table')
-
-        for tb in tables:
-            table_rows = tb.find_all('tr')
-
-            for tr in table_rows:
-                thd = tr.find_all(['th', 'td'])
-                row = [i.text for i in thd]
-                if row[0] == 'Middle layer super output area':
-                    area = row[1]
-                    break
-
-    except urllib.request.HTTPError as err:
-        print('HTTP Error: (postcode ', pcode, ')', err.code)
-
-    return area
+    return new_cases, new_deaths, total_cases, total_deaths
 
 
 if __name__ == '__main__':
