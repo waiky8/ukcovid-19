@@ -8,12 +8,10 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
 # Features:
 - Summary of cases/deaths
 - Map with markers showing the covid cases and deaths for each local authority with varying size to depict the scale of numbers
-- Bar charts showing cases/deaths for daily or cumulative figures
-
-(reduced data to last 28 days to speed up callback refresh)<br><br>
+- Bar charts showing cases/deaths for daily or cumulative figures<br><br>
 
 # Input options:
-- Select date
+- Select date (last 7 days)
 - Select local authorities
 - Option to view number of cases or deaths
 - Option to view daily data or cumulative data<br><br>
@@ -26,8 +24,4 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
  - **covid_totals.xlsx** - covid totals data<br><br>
 
 # Sample screenshots:
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot1.png)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot2.png)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot3.png)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot4.png)
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot5.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot.png)
