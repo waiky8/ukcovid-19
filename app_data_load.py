@@ -107,7 +107,7 @@ app.layout = html.Div(
                                     min_date_allowed=date_min,
                                     max_date_allowed=date_today
                                 )
-                            ]
+                            ], xs=4, sm=4, md=4, lg=4, xl=4
                         ),
 
                         dbc.Col(
@@ -133,7 +133,7 @@ app.layout = html.Div(
                                 ),
 
                                 html.Br()
-                            ]
+                            ], xs=4, sm=4, md=4, lg=4, xl=4
                         ),
 
                         dbc.Col(
@@ -159,11 +159,11 @@ app.layout = html.Div(
                                 ),
 
                                 html.Br()
-                            ]
+                            ], xs=4, sm=4, md=4, lg=4, xl=4
                         )
-                    ], style={'background': 'whitesmoke', 'border-style': 'groove'}
+                    ],  # style={'background': 'whitesmoke', 'border-style': 'groove'}
                 )
-            ], style={'padding': '0px 30px 0px 30px'}
+            ], style={'padding': '0px 10px 0px 10px'}
         )
     ]
 )
