@@ -1,7 +1,7 @@
 # UK Covid-19 Dashboard
 There are plenty of (UK) covid dashboards available but this one can show comparisons at local authority level. It is built using **Dash**, written in **Python** and sources data from GovUK site https://coronavirus.data.gov.uk/details/download.<br><br>
 
-**Mapbox** is used to show a map of cases/deaths for each local authority with markers and hover text.<br><br>
+**Mapbox** is used to show a map of cases/deaths for each local authority with markers and hover text. Leveraged **Doogal** to obtain longitude and latitude of local authorities to enable correct placement on the map.<br><br>
 
 The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.herokuapp.com/<br>
 
@@ -12,7 +12,7 @@ The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.he
 
 # Input options:
 - Select date (last 7 days)
-- Select local authorities
+- Select local authorities (380 in total)
 - Option to view number of cases or deaths
 - Option to view daily data or cumulative data<br><br>
 
