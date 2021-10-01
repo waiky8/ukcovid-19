@@ -9,7 +9,7 @@ Note, there is an second application that shows cases by local area - https://uk
 # Features:
 - Interactive dashboard 
 - Summary of cases/deaths
-- Map with markers showing the covid cases and deaths for each local authority with varying size to depict the scale of numbers
+- Map including marker that can show the covid cases and deaths for each local authority (marker size to aid in visual scale)
 - Bar charts showing cases/deaths for daily or cumulative figures
 - Data Table showing cases and movement of change<br><br>
 
