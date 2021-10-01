@@ -4,24 +4,21 @@ There are plenty of (UK) covid dashboards available but this one can show compar
 **Mapbox** is used to show a map of cases/deaths for each local authority with markers and hover text. Leveraged **Doogal** to obtain longitude and latitude of local authorities to enable correct placement on the map.<br><br>
 
 The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.herokuapp.com/<br>
+Note, there is an alternative application that shows cases by local area - https://ukcovid-19-local.herokuapp.com/<br>
 
 # Features:
+- Interactive dashboard 
 - Summary of cases/deaths
 - Map with markers showing the covid cases and deaths for each local authority with varying size to depict the scale of numbers
 - Bar charts showing cases/deaths for daily or cumulative figures<br><br>
 
-# Input options:
-- Select date (last 7 days)
-- Select local authorities (380 in total)
-- Option to view number of cases or deaths
-- Option to view daily data or cumulative data<br><br>
-
 # Description of code/files:
  - **app.py** - main application code that show data for local authority
- - **app2.py** - main application code that show data for local area
+ - **app_local.py** - main application code that show data for local area
  - **app_data_load.py** - code to retrieve latest data from GovUK
  - **covid_data.xlsx** - covid daily data at local authority level
  - **covid_totals.xlsx** - covid totals data<br><br>
 
 # Sample screenshots:
-![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot1.png)
+![alt text](https://github.com/waiky8/ukcovid-19/blob/main/screenshot2.png)
