@@ -4,7 +4,7 @@ There are plenty of (UK) covid dashboards available but this one can show compar
 **Mapbox** is used to show a map of cases/deaths for each local authority with markers and hover text. Leveraged **Doogal** to obtain longitude and latitude of local authorities to enable correct placement on the map.<br><br>
 
 The application is uploaded to **Heroku**. Check it out at https://ukcovid-19.herokuapp.com/<br>
-Note, there is an alternative application that shows cases by local area - https://ukcovid-19-local.herokuapp.com/<br>
+Note, there is an second application that shows cases by local area - https://ukcovid-19-local.herokuapp.com/<br>
 
 # Features:
 - Interactive dashboard 
