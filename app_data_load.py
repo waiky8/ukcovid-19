@@ -204,6 +204,11 @@ def return_new_data(selected_date):
             print(str(datetime.datetime.now()), 'step 2 of 3: extract data for ', d.strftime('%b %d, %Y'))
             df_load = df_load[df_load['date'] == selected_date]
 
+            df_load['newCasesByPublishDate'].fillna(0, inplace=True)
+            df_load['cumCasesByPublishDate'].fillna(0, inplace=True)
+            df_load['newDeaths28DaysByPublishDate'].fillna(0, inplace=True)
+            df_load['cumDeaths28DaysByPublishDate'].fillna(0, inplace=True)
+
             '''
             --------------------
             LATITUDE & LONGITUDE
