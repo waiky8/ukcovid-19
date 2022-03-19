@@ -43,9 +43,11 @@ READ EXCEL FILES
 
 covid_daily_file = 'covid_data.xlsx'
 covid_totals_file = 'covid_totals.xlsx'
+lat_long_file = 'lat_long.xlsx'
 
 df_daily = pd.read_excel(covid_daily_file)
 df_totals = pd.read_excel(covid_totals_file)
+df_lat_long = pd.read_excel(lat_long_file)
 
 '''
 ======================
@@ -356,8 +358,10 @@ def get_coord(loc_auth):
     Try to get lat/long from existing data to speed up runtime
     '''
 
-    lat = df_daily[df_daily['areaName'] == loc_auth]['Latitude'].values[0]
-    long = df_daily[df_daily['areaName'] == loc_auth]['Longitude'].values[0]
+    # lat = df_daily[df_daily['areaName'] == loc_auth]['Latitude'].values[0]
+    # long = df_daily[df_daily['areaName'] == loc_auth]['Longitude'].values[0]
+    lat = df_lat_long[df_lat_long['areaName'] == loc_auth]['Latitude'].values[0]
+    long = df_lat_long[df_lat_long['areaName'] == loc_auth]['Longitude'].values[0]
 
     if lat != '':
         return lat, long
